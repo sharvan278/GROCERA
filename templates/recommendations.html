@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Recommendations{% endblock %}
+
+{% block content %}
+<section class="recommendations-container">
+    <!-- Pricing Recommendations Section -->
+    <div class="recommendation-section">
+        <h2><i class="fas fa-tags"></i> Pricing Recommendations</h2>
+        {% if price_recommendations %}
+        <div class="recommendation-cards">
+            {% for rec in price_recommendations %}
+            <div class="recommendation-card pricing">
+                <div class="card-header">
+                    <h3>{{ rec.item }}</h3>
+                    <span class="price-change {% if rec.price_change_pct < 0 %}decrease{% else %}increase{% endif %}">
+                        {{ "%+.1f"|format(rec.price_change_pct) }}%
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="price-comparison">
+                        <div>
+                            <span class="label">Current</span>
+                            <span class="price">₹{{ "%.2f"|format(rec.current_price) }}</span>
+                        </div>
+                        <div>
+                            <span class="label">Recommended</span>
+                            <span class="price">₹{{ "%.2f"|format(rec.recommended_price) }}</span>
+                        </div>
+                    </div>
+                    <p class="reason">{{ rec.reason }}</p>
+                    <div class="market-comparison">
+                        <span>Market Average: ₹{{ "%.2f"|format(rec.competitor_avg) }}</span>
+                        <span>Lowest: ₹{{ "%.2f"|format(rec.min_competitor) }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="no-data">No pricing recommendations available.</p>
+        {% endif %}
+    </div>
+
+    <!-- Restock Recommendations Section -->
+    <div class="recommendation-section">
+        <h2><i class="fas fa-boxes"></i> Restock Recommendations</h2>
+        {% if restock_recommendations %}
+        <div class="recommendation-cards">
+            {% for rec in restock_recommendations %}
+            <div class="recommendation-card restock">
+                <div class="card-header">
+                    <h3>{{ rec.item }}</h3>
+                    <span class="priority {{ rec.priority }}">{{ rec.priority|capitalize }}</span>
+                </div>
+                <div class="card-body">
+                    <p>Current stock: {{ rec.current_stock }} {{ rec.unit }}</p>
+                    <p>Suggested order: {{ rec.suggested_order }} {{ rec.unit }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="no-data">No restock recommendations available.</p>
+        {% endif %}
+    </div>
+
+    <!-- Expiry Recommendations Section -->
+    <div class="recommendation-section">
+        <h2><i class="fas fa-clock"></i> Expiry Alerts</h2>
+        {% if expiry_recommendations %}
+        <div class="recommendation-cards">
+            {% for rec in expiry_recommendations %}
+            <div class="recommendation-card expiry">
+                <div class="card-header">
+                    <h3>{{ rec.item }}</h3>
+                    <span class="days-left">{{ rec.days_left }} days left</span>
+                </div>
+                <div class="card-body">
+                    <p>Expires on: {{ rec.expiry_date }}</p>
+                    <p>Quantity: {{ rec.quantity }} {{ rec.unit }}</p>
+                    <p class="action">Suggested action: {{ rec.suggested_action|capitalize }} 
+                        {% if rec.suggested_action == 'discount' %}({{ rec.discount_pct }}% off){% endif %}
+                    </p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="no-data">No expiry alerts currently.</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

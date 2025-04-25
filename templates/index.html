@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-content">
+        <h1>Smart Grocery Management</h1>
+        <p>GROCERA helps you manage grocery inventory, compare prices, and track stock levels. Upload a CSV file to get started!</p>
+        
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for message in messages %}
+                        <p class="flash">{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Upload Form -->
+        <button onclick="window.location.href='{{ url_for('upload_file') }}'" class="cta-button">
+            <i class="fas fa-upload"></i> Upload CSV
+        </button>
+    </div>
+</section>
+
+<section class="dashboard-container">
+    <div class="dashboard-card" id="price-card">
+        <div class="card-icon">
+            <i class="fas fa-tags"></i>
+        </div>
+        <h2>Price Comparisons</h2>
+        <p>Compare prices across multiple retailers</p>
+    </div>
+    
+    <div class="dashboard-card" id="stock-card">
+        <div class="card-icon">
+            <i class="fas fa-boxes"></i>
+        </div>
+        <h2>Stock Tracker</h2>
+        <p>Monitor your inventory levels</p>
+    </div>
+    
+    <div class="dashboard-card" id="alerts-card">
+        <div class="card-icon">
+            <i class="fas fa-bell"></i>
+        </div>
+        <h2>Stock Alerts</h2>
+        <p>Get notified when items run low</p>
+    </div>
+    
+    <div class="dashboard-card" id="recs-card">
+        <div class="card-icon">
+            <i class="fas fa-lightbulb"></i>
+        </div>
+        <h2>Recommendations</h2>
+        <p>Personalized shopping suggestions</p>
+    </div>
+</section>
+
+{% endblock %}

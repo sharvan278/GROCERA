@@ -1,0 +1,244 @@
+{% extends "base.html" %}
+
+{% block title %}Trending Items{% endblock %}
+
+{% block content %}
+<section class="trending-container">
+    <div class="trending-header">
+        <h1><i class="fas fa-fire-alt"></i> Hot Trends <span class="pulse">🔥</span></h1>
+        <p class="subtitle">Top performing items by inventory value</p>
+    </div>
+
+    <div class="trending-content">
+        {% if trending_items %}
+        <div class="trending-grid">
+            <div class="trending-card full-width">
+                <div class="trending-table-container">
+                    <h3><i class="fas fa-trophy"></i> Top 5 Trending Products</h3>
+                    <table class="trending-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Item</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Total Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in trending_items[:5] %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td class="item-name">
+                                    <div class="item-badge" style="background-color: {{ ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8']|random }}">
+                                        {{ item['item_name'][0]|upper if item['item_name'] else 'I' }}
+                                    </div>
+                                    {{ item['item_name'] if item['item_name'] else 'Item' }}
+                                </td>
+                                <td>₹{{ "%.2f"|format(item['price']) }}</td>
+                                <td>{{ item['quantity'] }} {{ item['unit'] }}</td>
+                                <td class="total-value">₹{{ "%.2f"|format(item['total_value']) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="trending-visualizations">
+                <div class="visualization-card">
+                    <h3><i class="fas fa-chart-pie"></i> All Products Value Distribution</h3>
+                    <div class="chart-container">
+                        <canvas id="valueChart"></canvas>
+                    </div>
+                </div>
+                <div class="visualization-card">
+                    <h3><i class="fas fa-chart-bar"></i> All Products Inventory</h3>
+                    <div class="chart-container">
+                        <canvas id="quantityChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="no-data">
+            <i class="fas fa-chart-line"></i>
+            <p>No trending items data available. Please upload a CSV file first.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Include Chart.js for visualizations -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const allItems = [
+        {% for item in trending_items %}
+        { 
+            name: "{{ item['item_name'] if item['item_name'] else 'Item' }}", 
+            value: {{ item['total_value'] }},
+            quantity: {{ item['quantity'] }},
+            unit: "{{ item['unit'] }}",
+            price: {{ item['price'] }}
+        },
+        {% endfor %}
+    ];
+
+    if (allItems.length > 0) {
+        // Sort items by total value for the pie chart
+        const sortedByValue = [...allItems].sort((a, b) => b.value - a.value);
+        
+        // Pie Chart (Value Distribution - All Items)
+        new Chart(document.getElementById('valueChart').getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: sortedByValue.map(item => `${item.name} (₹${item.value.toFixed(2)})`),
+                datasets: [{
+                    data: sortedByValue.map(item => item.value),
+                    backgroundColor: [
+                        '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8',
+                        '#F06292', '#7986CB', '#9575CD', '#64B5F6', '#4DB6AC',
+                        '#81C784', '#FFD54F', '#FF8A65', '#90A4AE', '#BA68C8'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { 
+                        position: 'right',
+                        labels: {
+                            boxWidth: 12,
+                            padding: 16
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const value = context.raw;
+                                const percentage = Math.round((value / total) * 100);
+                                return `${context.label}: ${percentage}% (₹${value.toFixed(2)})`;
+                            }
+                        }
+                    }
+                },
+                cutout: '65%'
+            }
+        });
+
+        // Bar Chart (Quantities - All Items)
+        new Chart(document.getElementById('quantityChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: allItems.map(item => item.name),
+                datasets: [{
+                    label: 'Stock Quantity',
+                    data: allItems.map(item => item.quantity),
+                    backgroundColor: function(context) {
+                        // Highlight top 5 items with different color
+                        const index = context.dataIndex;
+                        return index < 5 ? '#45B7D1' : '#D1E7F7';
+                    },
+                    borderRadius: 6,
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { 
+                        beginAtZero: true, 
+                        grid: { drawBorder: false },
+                        title: {
+                            display: true,
+                            text: 'Quantity'
+                        }
+                    },
+                    x: { 
+                        grid: { display: false },
+                        ticks: {
+                            maxRotation: 45,
+                            minRotation: 45
+                        }
+                    }
+                },
+                plugins: { 
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            afterLabel: function(context) {
+                                const item = allItems.find(i => i.name === context.label);
+                                return `Price: ₹${item.price.toFixed(2)}\nUnit: ${item.unit}\nTotal Value: ₹${item.value.toFixed(2)}`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
+
+<style>
+.trending-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+.trending-table th {
+    text-align: left;
+    padding: 12px 16px;
+    background-color: #f5f7fa;
+    font-weight: 600;
+}
+.trending-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #eaeef2;
+}
+.item-name {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.item-badge {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+}
+.total-value {
+    font-weight: 600;
+    color: #2c3e50;
+}
+.visualization-card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+}
+.visualization-card h3 {
+    margin-top: 0;
+    color: #3a5169;
+}
+.chart-container {
+    position: relative;
+    height: 300px;
+    margin-top: 15px;
+}
+.trending-table-container h3 {
+    margin-bottom: 10px;
+    color: #3a5169;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,357 @@
+{% extends "base.html" %}
+
+{% block title %}Smart Assistant{% endblock %}
+
+{% block content %}
+<div class="assistant-container">
+    <div class="neon-header">
+        <h1 class="neon-text">AI-Powered Smart Assistant</h1>
+        <p class="glow-text">Ask the assistant for grocery suggestions, tips, and alerts</p>
+    </div>
+
+    <div class="assistant-interface">
+        <!-- Updated Form with correct ID -->
+        <form id="chatForm" class="futuristic-form">
+            <div class="holographic-input">
+                <label for="userMessage" class="input-label">Your Question:</label>
+                <div class="input-container">
+                    <input type="text" id="userMessage" class="glowing-input" placeholder="E.g., What are the cheapest stores near me?">
+                    <span class="input-focus"></span>
+                </div>
+            </div>
+            <button type="submit" class="neon-button">
+                <span class="button-text">Ask</span>
+                <span class="button-glow"></span>
+            </button>
+        </form>
+
+        <!-- Added Chat Display Area -->
+        <div id="chatDisplay" class="chat-display">
+            {% for message in chat_history %}
+                <div class="message user">{{ message.user }}</div>
+                <div class="message ai">{{ message.ai }}</div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const chatForm = document.getElementById('chatForm');
+    const messageInput = document.getElementById('userMessage');
+    const chatDisplay = document.getElementById('chatDisplay');
+
+    // Clear the chat history when the page is refreshed
+    sessionStorage.removeItem('chatHistory');
+
+    if (!chatForm) {
+        console.error('Chat form not found!');
+        return;
+    }
+
+    chatForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const submitButton = this.querySelector('button[type="submit"]');
+        const message = messageInput.value.trim();
+
+        // Validate input
+        if (!message) {
+            showToast('Please enter a message', 'error');
+            return;
+        }
+
+        // Disable button during request
+        submitButton.disabled = true;
+        const buttonText = submitButton.querySelector('.button-text');
+        const originalText = buttonText.textContent;
+        buttonText.textContent = 'Processing...';
+        
+        // Add loading spinner
+        const spinner = document.createElement('span');
+        spinner.className = 'spinner';
+        submitButton.appendChild(spinner);
+
+        // Add user message to chat
+        appendMessage('user', message);
+        messageInput.value = '';
+
+        // Add loading indicator
+        const loadingId = 'loading-' + Date.now();
+        appendMessage('ai', 'Thinking...', loadingId, true);
+
+        try {
+            const response = await fetch('/shopping_assistant', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `message=${encodeURIComponent(message)}`
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            
+            // Remove loading indicator
+            document.getElementById(loadingId)?.remove();
+
+            if (data.status === 'error') {
+                appendMessage('ai', `⚠️ Error: ${data.error || 'Unknown error occurred'}`, '', false, 'error');
+            } else {
+                appendMessage('ai', data.response);
+            }
+
+        } catch (error) {
+            console.error('Chat error:', error);
+            document.getElementById(loadingId)?.remove();
+            
+            const errorMessage = error.message.includes('Network') 
+                ? 'Network error - please check your connection'
+                : 'Sorry, our AI assistant is temporarily unavailable';
+                
+            appendMessage('ai', errorMessage, '', false, 'error');
+        } finally {
+            // Re-enable button
+            submitButton.disabled = false;
+            buttonText.textContent = originalText;
+            submitButton.querySelector('.spinner')?.remove();
+        }
+    });
+
+    function appendMessage(sender, content, id = '', isLoading = false, type = '') {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${sender} ${type} ${isLoading ? 'loading' : ''}`;
+        if (id) messageDiv.id = id;
+        
+        // Simple formatting
+        content = content
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/\n/g, '<br>');
+        
+        messageDiv.innerHTML = content;
+        chatDisplay.appendChild(messageDiv);
+        chatDisplay.scrollTop = chatDisplay.scrollHeight;
+    }
+
+    function showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.classList.add('fade-out');
+            setTimeout(() => toast.remove(), 500);
+        }, 3000);
+    }
+});
+</script>
+
+<style>
+    :root {
+        --primary-color: #00f7ff;
+        --secondary-color: #ff00e6;
+        --dark-bg: #0a0a1a;
+        --darker-bg: #050510;
+        --text-color: #e0e0ff;
+    }
+    
+    body {
+        background-color: var(--dark-bg);
+        color: var(--text-color);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-image: 
+            radial-gradient(circle at 25% 25%, rgba(0, 247, 255, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 75% 75%, rgba(255, 0, 230, 0.1) 0%, transparent 50%);
+    }
+    
+    .assistant-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background-color: rgba(10, 10, 26, 0.8);
+        border-radius: 16px;
+        box-shadow: 0 0 30px rgba(0, 247, 255, 0.1),
+                    0 0 60px rgba(255, 0, 230, 0.05);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(0, 247, 255, 0.1);
+    }
+    
+    .neon-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+    
+    .neon-text {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--text-color);
+        text-shadow: 0 0 10px var(--primary-color),
+                    0 0 20px rgba(0, 247, 255, 0.5);
+        margin-bottom: 0.5rem;
+        letter-spacing: 1px;
+    }
+    
+    .glow-text {
+        font-size: 1.1rem;
+        color: rgba(224, 224, 255, 0.8);
+        text-shadow: 0 0 5px rgba(0, 247, 255, 0.3);
+    }
+    
+    .futuristic-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    
+    .holographic-input {
+        position: relative;
+    }
+    
+    .input-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-size: 1rem;
+        color: rgba(224, 224, 255, 0.9);
+        text-shadow: 0 0 5px rgba(0, 247, 255, 0.2);
+    }
+    
+    .input-container {
+        position: relative;
+    }
+    
+    .glowing-input {
+        width: 100%;
+        padding: 1rem;
+        background-color: rgba(5, 5, 16, 0.7);
+        border: 1px solid rgba(0, 247, 255, 0.3);
+        border-radius: 8px;
+        color: var(--text-color);
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        box-shadow: inset 0 0 10px rgba(0, 247, 255, 0.1),
+                    0 0 15px rgba(0, 247, 255, 0.05);
+    }
+    
+    .glowing-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: inset 0 0 15px rgba(0, 247, 255, 0.2),
+                    0 0 20px rgba(0, 247, 255, 0.1);
+    }
+    
+    .input-focus {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-radius: 8px;
+        pointer-events: none;
+        opacity: 0;
+        box-shadow: 0 0 10px rgba(0, 247, 255, 0.3);
+        transition: all 0.3s ease;
+    }
+    
+    .neon-button {
+        position: relative;
+        display: inline-block;
+        background-color: var(--primary-color);
+        color: var(--text-color);
+        padding: 1rem 2rem;
+        border: 1px solid var(--primary-color);
+        border-radius: 8px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        overflow: hidden;
+        text-align: center;
+        outline: none;
+        transition: all 0.3s ease;
+    }
+    
+    .neon-button:hover {
+        box-shadow: 0 0 20px rgba(0, 247, 255, 0.5),
+                    0 0 40px rgba(255, 0, 230, 0.3);
+    }
+    
+    .button-glow {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 150%;
+        height: 150%;
+        background-color: rgba(0, 247, 255, 0.4);
+        opacity: 0;
+        border-radius: 50%;
+        transition: all 0.4s ease;
+        transform: translate(-50%, -50%);
+    }
+    
+    .neon-button:hover .button-glow {
+        opacity: 0.8;
+    }
+    
+    .chat-display {
+        margin-top: 2rem;
+        padding: 1rem;
+        max-height: 300px;
+        overflow-y: auto;
+        background-color: rgba(5, 5, 16, 0.9);
+        border-radius: 8px;
+        box-shadow: inset 0 0 15px rgba(0, 247, 255, 0.3);
+    }
+    
+    .message {
+        margin-bottom: 1rem;
+    }
+    
+    .user {
+        color: #00ffb3;
+    }
+    
+    .ai {
+        color: #ff00e6;
+    }
+    
+    .toast {
+        background-color: rgba(0, 247, 255, 0.8);
+        padding: 0.5rem 1rem;
+        margin-top: 1rem;
+        border-radius: 8px;
+        box-shadow: 0 0 20px rgba(0, 247, 255, 0.5);
+        animation: fadeIn 0.5s ease-in-out;
+    }
+    
+    .toast.error {
+        background-color: rgba(255, 0, 230, 0.8);
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    .fade-out {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    
+    .spinner {
+        margin-left: 10px;
+        width: 16px;
+        height: 16px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-top: 3px solid var(--primary-color);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+</style>
+{% endblock %}

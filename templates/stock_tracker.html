@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Stock Tracker{% endblock %}
+
+{% block content %}
+<section class="dashboard-container">
+    <div class="dashboard-card full-width">
+        <h2><i class="fas fa-boxes"></i> Stock Tracker</h2>
+        <div class="card-content">
+            {% if inventory %}
+            <table class="inventory-table">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Stock</th>
+                        <th>Unit Price</th>
+                        <th>Total Value</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in inventory %}
+                    <tr class="stock-row {% if item.stock_level == 'low' %}warning{% elif item.stock_level == 'critical' %}critical{% endif %}">
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.quantity }} {{ item.unit }}</td>
+                        <td>¥{{ "%.2f"|format(item.unit_price) }}</td>
+                        <td>¥{{ "%.2f"|format(item.total_value) }}</td>
+                        <td>
+                            <span class="stock-status {{ item.stock_level }}">
+                                {{ item.stock_level|capitalize }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+                <p>No inventory data available. Upload a CSV file first.</p>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<div class="dashboard-actions">
+    <a href="{{ url_for('index') }}" class="cta-button">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+    <a href="{{ url_for('export_stock_report') }}" class="download-button">
+        <i class="fas fa-file-export"></i> Export Stock Report
+    </a>
+</div>
+{% endblock %}

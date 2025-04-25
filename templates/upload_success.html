@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Success</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .preview-container {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body class="p-4">
+    <div class="container">
+        <div class="alert alert-success" role="alert">
+            <h2 class="alert-heading">Processed Successfully!</h2>
+            <p>Your file has been processed and is ready for download.</p>
+            <hr>
+            <a class="btn btn-success" href="{{ download_link }}">
+                <i class="bi bi-download"></i> Download Processed File
+            </a>
+        </div>
+        
+        <div class="preview-container">
+            <h5 class="mb-3">Preview:</h5>
+            <div class="table-responsive">
+                {{ data|safe }}
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <a href="/" class="btn btn-outline-primary">Process Another File</a>
+        </div>
+    </div>
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+</body>
+</html>

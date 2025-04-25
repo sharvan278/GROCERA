@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GROCERA - {% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo"><a href="{{ url_for('index') }}">GROCERA</a></div>
+        <nav class="nav-items">
+            <a href="{{ url_for('index') }}" class="nav-link"><i class="fas fa-home"></i> Home</a>
+            <a href="{{ url_for('upload_file') }}" class="nav-link"><i class="fas fa-upload"></i> Upload</a>
+            <a href="{{ url_for('shopping_assistant') }}" class="nav-link"><i class="fas fa-robot"></i> Assistant</a>
+            <a href="{{ url_for('recommendations') }}" class="nav-link"><i class="fas fa-lightbulb"></i> Recommendations</a>
+            <a href="{{ url_for('trending_items') }}" class="nav-link"><i class="fas fa-chart-line"></i> Trending</a>
+        </nav>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <div class="partners">
+            <h3>Our Trusted Partners</h3>
+            <div class="partner-marquee">
+                <div class="partner-track">
+                    <!-- Repeating logos to enable smooth infinite scrolling -->
+                    {% for _ in range(2) %} 
+                    <div class="partner-card">
+                        <img src="{{ url_for('static', filename='images/amazon-fresh.jpeg') }}" alt="Amazon Fresh">
+                        <div class="partner-overlay">Free Delivery</div>
+                    </div>
+                    <div class="partner-card">
+                        <img src="{{ url_for('static', filename='images/reliance-smart.jpg') }}" alt="Reliance Smart">
+                        <div class="partner-overlay">Daily Deals</div>
+                    </div>
+                    <div class="partner-card">
+                        <img src="{{ url_for('static', filename='images/big-basket.jpg') }}" alt="Big Basket">
+                        <div class="partner-overlay">Express Delivery</div>
+                    </div>
+                    <div class="partner-card">
+                        <img src="{{ url_for('static', filename='images/walmart.jpeg') }}" alt="Walmart">
+                        <div class="partner-overlay">Price Match</div>
+                    </div>
+                    <div class="partner-card">
+                        <img src="{{ url_for('static', filename='images/aldi.png') }}" alt="ALDI">
+                        <div class="partner-overlay">Budget Prices</div>
+                    </div>
+                    <div class="partner-card">
+                        <img src="{{ url_for('static', filename='images/tesco.jpeg') }}" alt="Tesco">
+                        <div class="partner-overlay">Clubcard Points</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <p>&copy; 2025 GROCERA - Smart Grocery Management</p>
+    </footer>
+    
+
+    <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+</body>
+</html>

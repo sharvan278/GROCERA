@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Stock Alerts{% endblock %}
+
+{% block content %}
+<section class="dashboard-container">
+    <div class="dashboard-card full-width">
+        <h2><i class="fas fa-bell"></i> Stock Alerts</h2>
+        <div class="card-content">
+            <div class="alert-tabs">
+                <button class="tab-button active" data-tab="stock">Low Stock ({{ low_stock|length }})</button>
+                <button class="tab-button" data-tab="expiry">Expiring Soon ({{ expiring_soon|length }})</button>
+            </div>
+
+            <div id="stock-tab" class="tab-content active">
+                {% if low_stock %}
+                    {% for item in low_stock %}
+                    <div class="alert-item stock-alert">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div>
+                            <strong>{{ item.name }}</strong>
+                            <p>Only {{ item.current_stock }} {{ item.unit }} remaining (reorder at {{ item.reorder_point }} {{ item.unit }})</p>
+                            <small>Last sold: {{ item.last_sold_date|default('Never', true) }}</small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="no-alerts">No low stock alerts at this time.</p>
+                {% endif %}
+            </div>
+
+            <div id="expiry-tab" class="tab-content">
+                {% if expiring_soon %}
+                    {% for item in expiring_soon %}
+                    <div class="alert-item expiry-alert">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <strong>{{ item.name }}</strong>
+                            <p>Expires in {{ item.days_until_expiry }} days ({{ item.expiry_date }})</p>
+                            <small>{{ item.quantity }} {{ item.unit }} in stock</small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="no-alerts">No expiry alerts at this time.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="dashboard-actions">
+    <a href="{{ url_for('index') }}" class="cta-button">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const tabButtons = document.querySelectorAll('.tab-button');
+    tabButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const tabId = this.getAttribute('data-tab');
+            
+            // Update active tab button
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Update active tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`${tabId}-tab`).classList.add('active');
+        });
+    });
+});
+</script>
+{% endblock %}

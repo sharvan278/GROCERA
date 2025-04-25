@@ -1,0 +1,98 @@
+
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<section class="dashboard-container">
+    {% if not has_data %}
+    <div class="empty-dashboard">
+        <i class="fas fa-upload fa-4x"></i>
+        <h2>No Data Available</h2>
+        <p>Upload a CSV file to view your grocery insights</p>
+        <a href="{{ url_for('upload_file') }}" class="cta-button">
+            <i class="fas fa-upload"></i> Upload CSV
+        </a>
+    </div>
+    {% else %}
+    <!-- Your existing dashboard cards here -->
+     <!-- Price Comparisons Card -->
+<div class="dashboard-card">
+    <h2><i class="fas fa-tags"></i> Price Comparisons</h2>
+    <div class="card-content">
+        {% if price_data %}
+            {% for item in price_data[:3] %}
+            <div class="price-comparison-item">
+                <h3>{{ item.product_name }}</h3>
+                <p>Your Price: ¥{{ "%.2f"|format(item.your_price) }}</p>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-upload"></i>
+                <p>Upload data to view price comparisons</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Stock Tracker Card -->
+<div class="dashboard-card">
+    <h2><i class="fas fa-boxes"></i> Stock Tracker</h2>
+    <div class="card-content">
+        {% if inventory %}
+            {% for item in inventory[:3] %}
+            <div class="stock-item">
+                <h3>{{ item.name }}</h3>
+                <p>Stock: {{ item.quantity }} {{ item.unit }}</p>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-upload"></i>
+                <p>Upload data to view inventory</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Stock Alerts Card -->
+<div class="dashboard-card">
+    <h2><i class="fas fa-bell"></i> Stock Alerts</h2>
+    <div class="card-content">
+        {% if alerts %}
+            {% for alert in alerts[:3] %}
+            <div class="alert-item {{ 'stock-alert' if alert.type == 'low_stock' else 'expiry-alert' }}">
+                <p>{{ alert.item }}: {{ alert.message }}</p>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-upload"></i>
+                <p>Upload data to view alerts</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Recommendations Card -->
+<div class="dashboard-card">
+    <h2><i class="fas fa-lightbulb"></i> Recommendations</h2>
+    <div class="card-content">
+        {% if recommendations %}
+            {% for rec in recommendations[:3] %}
+            <div class="recommendation">
+                <p>{{ rec.title }}: {{ rec.description }}</p>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-upload"></i>
+                <p>Upload data to get recommendations</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+    {% endif %}
+</section>
+{% endblock %}

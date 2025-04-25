@@ -1,0 +1,545 @@
+{
+  "price_comparisons": [
+    {
+      "product_name": "Potatoes",
+      "your_price": 25.0,
+      "comparisons": [
+        {
+          "store": "SuperMart",
+          "price": 28.0,
+          "difference": 12.0,
+          "absolute_diff": 3.0
+        },
+        {
+          "store": "FreshGrocer",
+          "price": 23.5,
+          "difference": -6.0,
+          "absolute_diff": -1.5
+        }
+      ]
+    },
+    {
+      "product_name": "Salt",
+      "your_price": 20.0,
+      "comparisons": [
+        {
+          "store": "SuperMart",
+          "price": 22.0,
+          "difference": 10.0,
+          "absolute_diff": 2.0
+        },
+        {
+          "store": "FreshGrocer",
+          "price": 19.8,
+          "difference": -1.0,
+          "absolute_diff": -0.2
+        }
+      ]
+    },
+    {
+      "product_name": "Bananas",
+      "your_price": 40.0,
+      "comparisons": [
+        {
+          "store": "SuperMart",
+          "price": 42.0,
+          "difference": 5.0,
+          "absolute_diff": 2.0
+        },
+        {
+          "store": "FreshGrocer",
+          "price": 38.5,
+          "difference": -3.8,
+          "absolute_diff": -1.5
+        }
+      ]
+    },
+    {
+      "product_name": "Milk",
+      "your_price": 50.0,
+      "comparisons": [
+        {
+          "store": "SuperMart",
+          "price": 48.0,
+          "difference": -4.0,
+          "absolute_diff": -2.0
+        },
+        {
+          "store": "FreshGrocer",
+          "price": 45.5,
+          "difference": -9.0,
+          "absolute_diff": -4.5
+        }
+      ]
+    },
+    {
+      "product_name": "Rice",
+      "your_price": 60.0,
+      "comparisons": []
+    },
+    {
+      "product_name": "Chicken",
+      "your_price": 200.0,
+      "comparisons": []
+    },
+    {
+      "product_name": "Eggs",
+      "your_price": 80.0,
+      "comparisons": [
+        {
+          "store": "SuperMart",
+          "price": 68.0,
+          "difference": -15.0,
+          "absolute_diff": -12.0
+        },
+        {
+          "store": "FreshGrocer",
+          "price": 65.5,
+          "difference": -18.1,
+          "absolute_diff": -14.5
+        }
+      ]
+    },
+    {
+      "product_name": "Bread",
+      "your_price": 35.0,
+      "comparisons": [
+        {
+          "store": "SuperMart",
+          "price": 28.0,
+          "difference": -20.0,
+          "absolute_diff": -7.0
+        },
+        {
+          "store": "FreshGrocer",
+          "price": 25.5,
+          "difference": -27.1,
+          "absolute_diff": -9.5
+        }
+      ]
+    },
+    {
+      "product_name": "Tomatoes",
+      "your_price": 30.0,
+      "comparisons": []
+    },
+    {
+      "product_name": "Onions",
+      "your_price": 40.0,
+      "comparisons": []
+    }
+  ],
+  "inventory_status": [
+    {
+      "name": "Potatoes",
+      "quantity": 10,
+      "unit": "kg",
+      "unit_price": 25.0,
+      "total_value": 0,
+      "stock_level": "adequate",
+      "progress": 10
+    },
+    {
+      "name": "Salt",
+      "quantity": 5,
+      "unit": "packet",
+      "unit_price": 20.0,
+      "total_value": 0,
+      "stock_level": "low",
+      "progress": 5
+    },
+    {
+      "name": "Bananas",
+      "quantity": 12,
+      "unit": "dozen",
+      "unit_price": 40.0,
+      "total_value": 0,
+      "stock_level": "adequate",
+      "progress": 12
+    },
+    {
+      "name": "Milk",
+      "quantity": 6,
+      "unit": "liters",
+      "unit_price": 50.0,
+      "total_value": 0,
+      "stock_level": "low",
+      "progress": 6
+    },
+    {
+      "name": "Rice",
+      "quantity": 8,
+      "unit": "kg",
+      "unit_price": 60.0,
+      "total_value": 0,
+      "stock_level": "low",
+      "progress": 8
+    },
+    {
+      "name": "Chicken",
+      "quantity": 3,
+      "unit": "kg",
+      "unit_price": 200.0,
+      "total_value": 0,
+      "stock_level": "low",
+      "progress": 3
+    },
+    {
+      "name": "Eggs",
+      "quantity": 24,
+      "unit": "pieces",
+      "unit_price": 80.0,
+      "total_value": 0,
+      "stock_level": "adequate",
+      "progress": 24
+    },
+    {
+      "name": "Bread",
+      "quantity": 5,
+      "unit": "loaves",
+      "unit_price": 35.0,
+      "total_value": 0,
+      "stock_level": "low",
+      "progress": 5
+    },
+    {
+      "name": "Tomatoes",
+      "quantity": 2,
+      "unit": "kg",
+      "unit_price": 30.0,
+      "total_value": 0,
+      "stock_level": "critical",
+      "progress": 2
+    },
+    {
+      "name": "Onions",
+      "quantity": 4,
+      "unit": "kg",
+      "unit_price": 40.0,
+      "total_value": 0,
+      "stock_level": "low",
+      "progress": 4
+    }
+  ],
+  "stock_alerts": [
+    {
+      "type": "low_stock",
+      "item": "Salt",
+      "current_stock": 5,
+      "reorder_point": 5,
+      "unit": "packet",
+      "severity": "medium"
+    },
+    {
+      "type": "expiry",
+      "item": "Bananas",
+      "expiry_date": "2025-04-20",
+      "days_until_expiry": -5,
+      "quantity": 12,
+      "unit": "dozen",
+      "severity": "high"
+    },
+    {
+      "type": "expiry",
+      "item": "Milk",
+      "expiry_date": "2025-04-10",
+      "days_until_expiry": -15,
+      "quantity": 6,
+      "unit": "liters",
+      "severity": "high"
+    },
+    {
+      "type": "low_stock",
+      "item": "Chicken",
+      "current_stock": 3,
+      "reorder_point": 5,
+      "unit": "kg",
+      "severity": "medium"
+    },
+    {
+      "type": "expiry",
+      "item": "Chicken",
+      "expiry_date": "2025-04-05",
+      "days_until_expiry": -20,
+      "quantity": 3,
+      "unit": "kg",
+      "severity": "high"
+    },
+    {
+      "type": "expiry",
+      "item": "Eggs",
+      "expiry_date": "2025-04-15",
+      "days_until_expiry": -10,
+      "quantity": 24,
+      "unit": "pieces",
+      "severity": "high"
+    },
+    {
+      "type": "low_stock",
+      "item": "Bread",
+      "current_stock": 5,
+      "reorder_point": 5,
+      "unit": "loaves",
+      "severity": "medium"
+    },
+    {
+      "type": "expiry",
+      "item": "Bread",
+      "expiry_date": "2025-04-08",
+      "days_until_expiry": -17,
+      "quantity": 5,
+      "unit": "loaves",
+      "severity": "high"
+    },
+    {
+      "type": "low_stock",
+      "item": "Tomatoes",
+      "current_stock": 2,
+      "reorder_point": 5,
+      "unit": "kg",
+      "severity": "medium"
+    },
+    {
+      "type": "expiry",
+      "item": "Tomatoes",
+      "expiry_date": "2025-04-12",
+      "days_until_expiry": -13,
+      "quantity": 2,
+      "unit": "kg",
+      "severity": "high"
+    },
+    {
+      "type": "low_stock",
+      "item": "Onions",
+      "current_stock": 4,
+      "reorder_point": 5,
+      "unit": "kg",
+      "severity": "medium"
+    },
+    {
+      "type": "expiry",
+      "item": "Onions",
+      "expiry_date": "2025-05-01",
+      "days_until_expiry": 6,
+      "quantity": 4,
+      "unit": "kg",
+      "severity": "medium"
+    }
+  ],
+  "pricing_recommendations": [
+    {
+      "item": "Bread",
+      "current_price": 35.0,
+      "recommended_price": 25.41,
+      "competitor_avg": 26.75,
+      "min_competitor": 25.5,
+      "price_change_pct": -27.4,
+      "sales_impact": "Estimated 46.6% sales increase",
+      "reason": "Price reduction recommended. highly price-sensitive product. more competitive pricing"
+    },
+    {
+      "item": "Eggs",
+      "current_price": 80.0,
+      "recommended_price": 65.41,
+      "competitor_avg": 66.75,
+      "min_competitor": 65.5,
+      "price_change_pct": -18.2,
+      "sales_impact": "Estimated 23.7% sales increase",
+      "reason": "Price reduction recommended. moderately price-sensitive product. more competitive pricing"
+    },
+    {
+      "item": "Milk",
+      "current_price": 50.0,
+      "recommended_price": 45.82,
+      "competitor_avg": 46.75,
+      "min_competitor": 45.5,
+      "price_change_pct": -8.4,
+      "sales_impact": "Estimated 11.7% sales increase",
+      "reason": "Price reduction recommended. moderately price-sensitive product. more competitive pricing"
+    },
+    {
+      "item": "Salt",
+      "current_price": 20.0,
+      "recommended_price": 20.48,
+      "competitor_avg": 20.9,
+      "min_competitor": 19.8,
+      "price_change_pct": 2.4,
+      "sales_impact": "Estimated 2.9% sales decrease",
+      "reason": "Price increase recommended. moderately price-sensitive product. premium pricing justified"
+    },
+    {
+      "item": "Potatoes",
+      "current_price": 25.0,
+      "recommended_price": 24.46,
+      "competitor_avg": 25.75,
+      "min_competitor": 23.5,
+      "price_change_pct": -2.2,
+      "sales_impact": "Estimated 3.9% sales increase",
+      "reason": "Price reduction recommended. highly price-sensitive product. more competitive pricing"
+    },
+    {
+      "item": "Bananas",
+      "current_price": 40.0,
+      "recommended_price": 39.44,
+      "competitor_avg": 40.25,
+      "min_competitor": 38.5,
+      "price_change_pct": -1.4,
+      "sales_impact": "Estimated 2.1% sales increase",
+      "reason": "Price reduction recommended. moderately price-sensitive product. more competitive pricing"
+    }
+  ],
+  "restock_recommendations": [
+    {
+      "type": "restock",
+      "item": "Chicken",
+      "current_stock": 3,
+      "suggested_order": 7,
+      "unit": "kg",
+      "priority": "medium"
+    },
+    {
+      "type": "restock",
+      "item": "Tomatoes",
+      "current_stock": 2,
+      "suggested_order": 8,
+      "unit": "kg",
+      "priority": "medium"
+    },
+    {
+      "type": "restock",
+      "item": "Onions",
+      "current_stock": 4,
+      "suggested_order": 6,
+      "unit": "kg",
+      "priority": "medium"
+    }
+  ],
+  "expiry_recommendations": [
+    {
+      "type": "expiry",
+      "item": "Bananas",
+      "expiry_date": "2025-04-20",
+      "days_left": -5,
+      "quantity": 12,
+      "suggested_action": "discount",
+      "discount_pct": 30
+    },
+    {
+      "type": "expiry",
+      "item": "Milk",
+      "expiry_date": "2025-04-10",
+      "days_left": -15,
+      "quantity": 6,
+      "suggested_action": "discount",
+      "discount_pct": 30
+    },
+    {
+      "type": "expiry",
+      "item": "Chicken",
+      "expiry_date": "2025-04-05",
+      "days_left": -20,
+      "quantity": 3,
+      "suggested_action": "discount",
+      "discount_pct": 30
+    },
+    {
+      "type": "expiry",
+      "item": "Eggs",
+      "expiry_date": "2025-04-15",
+      "days_left": -10,
+      "quantity": 24,
+      "suggested_action": "discount",
+      "discount_pct": 30
+    },
+    {
+      "type": "expiry",
+      "item": "Bread",
+      "expiry_date": "2025-04-08",
+      "days_left": -17,
+      "quantity": 5,
+      "suggested_action": "discount",
+      "discount_pct": 30
+    },
+    {
+      "type": "expiry",
+      "item": "Tomatoes",
+      "expiry_date": "2025-04-12",
+      "days_left": -13,
+      "quantity": 2,
+      "suggested_action": "discount",
+      "discount_pct": 30
+    },
+    {
+      "type": "expiry",
+      "item": "Onions",
+      "expiry_date": "2025-05-01",
+      "days_left": 6,
+      "quantity": 4,
+      "suggested_action": "promote",
+      "discount_pct": 10
+    }
+  ],
+  "trending_items": [
+    {
+      "item_name": "Potatoes",
+      "price": 25.0,
+      "quantity": 10,
+      "total_value": 250.0
+    },
+    {
+      "item_name": "Eggs",
+      "price": 80.0,
+      "quantity": 24,
+      "total_value": 1920.0
+    },
+    {
+      "item_name": "Bananas",
+      "price": 40.0,
+      "quantity": 12,
+      "total_value": 480.0
+    },
+    {
+      "item_name": "Salt",
+      "price": 20.0,
+      "quantity": 5,
+      "total_value": 100.0
+    },
+    {
+      "item_name": "Bread",
+      "price": 35.0,
+      "quantity": 5,
+      "total_value": 175.0
+    },
+    {
+      "item_name": "Rice",
+      "price": 60.0,
+      "quantity": 8,
+      "total_value": 480.0
+    },
+    {
+      "item_name": "Milk",
+      "price": 50.0,
+      "quantity": 6,
+      "total_value": 300.0
+    },
+    {
+      "item_name": "Onions",
+      "price": 40.0,
+      "quantity": 4,
+      "total_value": 160.0
+    },
+    {
+      "item_name": "Tomatoes",
+      "price": 30.0,
+      "quantity": 2,
+      "total_value": 60.0
+    },
+    {
+      "item_name": "Chicken",
+      "price": 200.0,
+      "quantity": 3,
+      "total_value": 600.0
+    }
+  ],
+  "generated_at": "2025-04-24T21:32:58.362507"
+}
