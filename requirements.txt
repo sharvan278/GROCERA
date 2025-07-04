@@ -25,3 +25,4 @@ gunicorn
 Werkzeug==2.0.3
 joblib
 scikit-learn
+# scikit-learn==1.6.1 if above didnt work
