@@ -12,7 +12,7 @@
 
 ## 🧰 Prerequisites
 
-- Python 3.9 must be installed on your machine.
+- Python 3.9 must be installed on your machine. (https://www.python.org/downloads/release/python-390/)
 - Ensure `pip` is available and functional (`pip --version` to check).
 - PowerShell users (Windows) must bypass execution policy to activate virtualenv:
 
