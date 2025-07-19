@@ -2,11 +2,12 @@
 
 ## 📌 Project Overview
 
-- GROCERA is a smart grocery inventory manager for tracking items, prices, quantity, and expiry dates.
-- Uploads and processes `.csv` grocery data with predefined column formats.
-- Provides a web interface using Flask for inventory interaction.
-- Uses Google Generative AI for enhanced analysis or assistance features.
-- Aims to minimize grocery wastage and improve stock efficiency.
+- **GROCERA** is a smart grocery inventory manager designed to track items, prices, quantity, and expiry dates.
+- Allows users to upload and process `.csv` grocery data with predefined column formats.
+- Offers a web-based UI using **Flask** for seamless inventory interaction.
+- Integrates **Google Generative AI** for enhanced analytics and smart assistance.
+- Aims to **minimize grocery wastage** and **optimize stock management**.
+- ✅ **Live Demo:** [https://grocera-2.onrender.com](https://grocera-2.onrender.com)
 
 ---
 
