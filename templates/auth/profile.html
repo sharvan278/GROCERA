@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - Grocera{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="profile-card">
+        <div class="profile-header">
+            <div class="profile-avatar">
+                <i class="fas fa-user-circle fa-5x"></i>
+            </div>
+            <h2>{{ user.username }}</h2>
+            <p class="user-email">{{ user.email }}</p>
+            <span class="role-badge {{ user.role }}">{{ user.role|upper }}</span>
+        </div>
+        
+        <div class="profile-stats">
+            <div class="stat-item">
+                <i class="fas fa-boxes"></i>
+                <div class="stat-info">
+                    <span class="stat-value">{{ stats.inventory_count }}</span>
+                    <span class="stat-label">Items</span>
+                </div>
+            </div>
+            
+            <div class="stat-item">
+                <i class="fas fa-bell"></i>
+                <div class="stat-info">
+                    <span class="stat-value">{{ stats.alerts_count }}</span>
+                    <span class="stat-label">Alerts</span>
+                </div>
+            </div>
+            
+            <div class="stat-item">
+                <i class="fas fa-dollar-sign"></i>
+                <div class="stat-info">
+                    <span class="stat-value">${{ "%.2f"|format(stats.total_value) }}</span>
+                    <span class="stat-label">Total Value</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="profile-actions">
+            <button class="btn-secondary" onclick="alert('Feature coming soon!')">
+                <i class="fas fa-edit"></i> Edit Profile
+            </button>
+            <button class="btn-secondary" onclick="alert('Feature coming soon!')">
+                <i class="fas fa-key"></i> Change Password
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+.profile-container {
+    max-width: 600px;
+    margin: 3rem auto;
+    padding: 0 1rem;
+}
+
+.profile-card {
+    background: var(--white);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    padding: 2rem;
+}
+
+.profile-header {
+    text-align: center;
+    padding-bottom: 2rem;
+    border-bottom: 2px solid #F5F5F5;
+}
+
+.profile-avatar {
+    color: var(--primary);
+    margin-bottom: 1rem;
+}
+
+.user-email {
+    color: var(--gray);
+    margin: 0.5rem 0;
+}
+
+.role-badge {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.role-badge.admin {
+    background: #F44336;
+    color: white;
+}
+
+.role-badge.manager {
+    background: var(--primary);
+    color: white;
+}
+
+.role-badge.viewer {
+    background: var(--gray);
+    color: white;
+}
+
+.profile-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    padding: 2rem 0;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-item i {
+    font-size: 2rem;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+}
+
+.stat-value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--dark);
+}
+
+.stat-label {
+    display: block;
+    color: var(--gray);
+    font-size: 0.9rem;
+}
+
+.profile-actions {
+    display: flex;
+    gap: 1rem;
+    padding-top: 2rem;
+    border-top: 2px solid #F5F5F5;
+}
+
+.btn-secondary {
+    flex: 1;
+    padding: 0.75rem;
+    background: #F5F5F5;
+    color: var(--dark);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-secondary:hover {
+    background: #E0E0E0;
+}
+</style>
+{% endblock %}

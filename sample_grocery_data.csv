@@ -1,0 +1,21 @@
+item_name,category,price,quantity,unit,store_name,expiry_date
+Organic Apples,Fruits,4.99,50,lbs,Whole Foods,2026-03-15
+White Bread,Bakery,2.49,30,loaves,Walmart,2026-02-20
+Whole Milk,Dairy,3.99,20,gallons,Kroger,2026-02-15
+Chicken Breast,Meat,7.99,15,lbs,Costco,2026-02-10
+Brown Rice,Grains,5.99,40,bags,Trader Joe's,2027-01-01
+Cheddar Cheese,Dairy,4.49,25,blocks,Whole Foods,2026-03-01
+Ground Beef,Meat,6.99,18,lbs,Sam's Club,2026-02-08
+Fresh Spinach,Vegetables,3.49,35,bunches,Sprouts,2026-02-12
+Greek Yogurt,Dairy,5.99,40,containers,Walmart,2026-02-25
+Bananas,Fruits,0.59,100,lbs,Safeway,2026-02-18
+Orange Juice,Beverages,4.99,22,cartons,Kroger,2026-02-20
+Pasta,Grains,1.99,60,boxes,Aldi,2027-06-01
+Tomato Sauce,Canned Goods,2.49,45,jars,Walmart,2027-03-01
+Olive Oil,Cooking Oils,8.99,12,bottles,Whole Foods,2027-12-31
+Coffee Beans,Beverages,12.99,8,bags,Starbucks,2026-12-01
+Eggs,Dairy,3.49,50,dozens,Costco,2026-02-22
+Broccoli,Vegetables,2.99,28,bunches,Trader Joe's,2026-02-14
+Salmon Fillet,Seafood,14.99,10,lbs,Whole Foods,2026-02-09
+Potato Chips,Snacks,3.99,55,bags,Walmart,2026-05-01
+Ice Cream,Frozen,5.99,30,pints,Ben & Jerry's,2026-04-01

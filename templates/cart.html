@@ -1,0 +1,276 @@
+{% extends "base.html" %}
+
+{% block title %}Shopping Cart{% endblock %}
+
+{% block content %}
+<section class="cart-container">
+    <div class="cart-header">
+        <h1><i class="fas fa-shopping-cart"></i> Shopping Cart</h1>
+        {% if cart_items %}
+        <form method="POST" action="{{ url_for('main.clear_cart') }}" style="display: inline;">
+            <button type="submit" class="btn-danger" onclick="return confirm('Clear entire cart?')">
+                <i class="fas fa-trash"></i> Clear Cart
+            </button>
+        </form>
+        {% endif %}
+    </div>
+
+    {% if cart_items %}
+    <div class="cart-items">
+        {% for cart_item in cart_items %}
+        <div class="cart-item-card">
+            <div class="item-details">
+                <h3>{{ cart_item.item.item_name }}</h3>
+                <p class="item-meta">
+                    <span><i class="fas fa-tag"></i> {{ cart_item.item.category or 'Uncategorized' }}</span>
+                    <span><i class="fas fa-store"></i> {{ cart_item.item.store_name or 'N/A' }}</span>
+                </p>
+                <p class="item-price">${{ "%.2f"|format(cart_item.item.price) }} per {{ cart_item.item.unit }}</p>
+            </div>
+            
+            <div class="item-actions">
+                <form method="POST" action="{{ url_for('main.update_cart', cart_id=cart_item.id) }}" class="quantity-form">
+                    <label>Quantity:</label>
+                    <input type="number" name="quantity" value="{{ cart_item.quantity }}" min="1" max="{{ cart_item.item.quantity }}">
+                    <button type="submit" class="btn-sm btn-primary">
+                        <i class="fas fa-sync"></i> Update
+                    </button>
+                </form>
+                
+                <form method="POST" action="{{ url_for('main.remove_from_cart', cart_id=cart_item.id) }}" style="display: inline;">
+                    <button type="submit" class="btn-sm btn-danger">
+                        <i class="fas fa-times"></i> Remove
+                    </button>
+                </form>
+            </div>
+            
+            <div class="item-subtotal">
+                <strong>Subtotal:</strong>
+                <span class="price-highlight">${{ "%.2f"|format(cart_item.subtotal) }}</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="cart-summary">
+        <div class="summary-card">
+            <h2>Order Summary</h2>
+            <div class="summary-line">
+                <span>Items:</span>
+                <span>{{ cart_items|length }}</span>
+            </div>
+            <div class="summary-line">
+                <span>Subtotal:</span>
+                <span>${{ "%.2f"|format(total) }}</span>
+            </div>
+            <div class="summary-line total-line">
+                <span><strong>Total:</strong></span>
+                <span class="price-highlight"><strong>${{ "%.2f"|format(total) }}</strong></span>
+            </div>
+            
+            <button class="btn-primary btn-block" onclick="alert('Checkout coming soon!')">
+                <i class="fas fa-credit-card"></i> Proceed to Checkout
+            </button>
+            
+            <a href="{{ url_for('main.inventory') }}" class="btn-secondary btn-block">
+                <i class="fas fa-shopping-bag"></i> Continue Shopping
+            </a>
+        </div>
+    </div>
+    {% else %}
+    <div class="empty-cart">
+        <i class="fas fa-shopping-cart fa-5x"></i>
+        <h2>Your cart is empty</h2>
+        <p>Browse our inventory and add items to get started</p>
+        <a href="{{ url_for('main.inventory') }}" class="btn-primary">
+            <i class="fas fa-shopping-bag"></i> Go to Inventory
+        </a>
+    </div>
+    {% endif %}
+</section>
+
+<style>
+.cart-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+}
+
+.cart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--primary);
+}
+
+.cart-items {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.cart-item-card {
+    background: var(--white);
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    display: grid;
+    grid-template-columns: 2fr 1fr auto;
+    gap: 2rem;
+    align-items: center;
+}
+
+.item-details h3 {
+    margin: 0 0 0.5rem 0;
+    color: var(--dark);
+}
+
+.item-meta {
+    display: flex;
+    gap: 1.5rem;
+    color: var(--gray);
+    font-size: 0.9rem;
+    margin: 0.5rem 0;
+}
+
+.item-meta span {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.item-price {
+    font-weight: 600;
+    color: var(--primary);
+    margin: 0.5rem 0 0 0;
+}
+
+.item-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.quantity-form {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.quantity-form input {
+    width: 80px;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.item-subtotal {
+    text-align: right;
+    font-size: 1.2rem;
+}
+
+.price-highlight {
+    color: var(--primary);
+    font-size: 1.3rem;
+    font-weight: bold;
+}
+
+.cart-summary {
+    position: sticky;
+    top: 2rem;
+}
+
+.summary-card {
+    background: var(--white);
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
+
+.summary-card h2 {
+    margin: 0 0 1.5rem 0;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #eee;
+}
+
+.summary-line {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.total-line {
+    margin-top: 1rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid #eee;
+    border-bottom: none;
+    font-size: 1.2rem;
+}
+
+.btn-block {
+    width: 100%;
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.btn-sm {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+}
+
+.btn-danger {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-danger:hover {
+    background: #c82333;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.empty-cart {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: var(--white);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
+
+.empty-cart i {
+    color: var(--gray);
+    margin-bottom: 2rem;
+}
+
+.empty-cart h2 {
+    color: var(--dark);
+    margin-bottom: 1rem;
+}
+
+.empty-cart p {
+    color: var(--gray);
+    margin-bottom: 2rem;
+}
+
+@media (max-width: 768px) {
+    .cart-item-card {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .item-subtotal {
+        text-align: left;
+    }
+}
+</style>
+{% endblock %}

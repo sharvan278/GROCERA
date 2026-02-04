@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+
+{% block title %}AI Chat Assistant - Grocera{% endblock %}
+
+{% block content %}
+<div class="chat-container">
+    <div class="chat-header">
+        <h1><i class="fas fa-robot"></i> AI Chat Assistant</h1>
+        <p>Ask questions about your inventory, get recommendations, and more!</p>
+    </div>
+    
+    <div class="chat-box" id="chatBox">
+        <div class="chat-message bot">
+            <div class="message-avatar">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div class="message-content">
+                <p>Hello! I'm your AI grocery assistant. How can I help you today?</p>
+            </div>
+        </div>
+    </div>
+    
+    <form id="chatForm" class="chat-input-form">
+        <input type="text" 
+               id="messageInput" 
+               name="message" 
+               placeholder="Ask me anything about your inventory..."
+               autocomplete="off"
+               required>
+        <button type="submit" class="send-btn">
+            <i class="fas fa-paper-plane"></i>
+        </button>
+    </form>
+</div>
+
+<style>
+.chat-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.chat-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.chat-box {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 2rem;
+    min-height: 500px;
+    max-height: 600px;
+    overflow-y: auto;
+    box-shadow: var(--shadow);
+    margin-bottom: 1rem;
+}
+
+.chat-message {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.chat-message.user {
+    flex-direction: row-reverse;
+}
+
+.message-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+.chat-message.bot .message-avatar {
+    background: var(--primary);
+    color: var(--white);
+}
+
+.chat-message.user .message-avatar {
+    background: var(--secondary);
+    color: var(--white);
+}
+
+.message-content {
+    flex: 1;
+    padding: 1rem;
+    border-radius: 12px;
+}
+
+.chat-message.bot .message-content {
+    background: #F5F5F5;
+}
+
+.chat-message.user .message-content {
+    background: var(--primary-light);
+}
+
+.chat-input-form {
+    display: flex;
+    gap: 1rem;
+    background: var(--white);
+    padding: 1rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
+
+.chat-input-form input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 2px solid #E0E0E0;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.chat-input-form input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.send-btn {
+    padding: 0.75rem 1.5rem;
+    background: var(--primary);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.send-btn:hover {
+    background: var(--primary-dark);
+}
+
+.loading {
+    text-align: center;
+    color: var(--gray);
+    font-style: italic;
+}
+</style>
+
+<script>
+const chatForm = document.getElementById('chatForm');
+const chatBox = document.getElementById('chatBox');
+const messageInput = document.getElementById('messageInput');
+
+chatForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const message = messageInput.value.trim();
+    if (!message) return;
+    
+    // Add user message
+    addMessage(message, 'user');
+    messageInput.value = '';
+    
+    // Show loading
+    const loadingDiv = addMessage('Thinking...', 'bot', true);
+    
+    try {
+        const formData = new FormData();
+        formData.append('message', message);
+        
+        const response = await fetch('{{ url_for("main.chat") }}', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        // Remove loading
+        loadingDiv.remove();
+        
+        // Add bot response
+        if (data.response) {
+            addMessage(data.response, 'bot');
+        } else {
+            addMessage('Sorry, I encountered an error. Please try again.', 'bot');
+        }
+    } catch (error) {
+        loadingDiv.remove();
+        addMessage('Sorry, I encountered an error. Please try again.', 'bot');
+    }
+});
+
+function addMessage(text, sender, isLoading = false) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `chat-message ${sender} ${isLoading ? 'loading' : ''}`;
+    
+    const avatarDiv = document.createElement('div');
+    avatarDiv.className = 'message-avatar';
+    avatarDiv.innerHTML = sender === 'bot' ? '<i class="fas fa-robot"></i>' : '<i class="fas fa-user"></i>';
+    
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'message-content';
+    contentDiv.innerHTML = `<p>${text}</p>`;
+    
+    messageDiv.appendChild(avatarDiv);
+    messageDiv.appendChild(contentDiv);
+    chatBox.appendChild(messageDiv);
+    
+    chatBox.scrollTop = chatBox.scrollHeight;
+    
+    return messageDiv;
+}
+</script>
+{% endblock %}

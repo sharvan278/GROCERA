@@ -5,94 +5,342 @@
 
 {% block content %}
 <section class="dashboard-container">
-    {% if not has_data %}
-    <div class="empty-dashboard">
-        <i class="fas fa-upload fa-4x"></i>
-        <h2>No Data Available</h2>
-        <p>Upload a CSV file to view your grocery insights</p>
-        <a href="{{ url_for('upload_file') }}" class="cta-button">
+    <div class="dashboard-header">
+        <h1><i class="fas fa-tachometer-alt"></i> Dashboard</h1>
+        <a href="{{ url_for('main.upload_file') }}" class="btn-primary">
             <i class="fas fa-upload"></i> Upload CSV
         </a>
     </div>
-    {% else %}
-    <!-- Your existing dashboard cards here -->
-     <!-- Price Comparisons Card -->
-<div class="dashboard-card">
-    <h2><i class="fas fa-tags"></i> Price Comparisons</h2>
-    <div class="card-content">
-        {% if price_data %}
-            {% for item in price_data[:3] %}
-            <div class="price-comparison-item">
-                <h3>{{ item.product_name }}</h3>
-                <p>Your Price: ¥{{ "%.2f"|format(item.your_price) }}</p>
+    
+    <!-- Summary Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <i class="fas fa-boxes"></i>
+            <div class="stat-content">
+                <h3>{{ summary.total_items }}</h3>
+                <p>Total Items</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-dollar-sign"></i>
+            <div class="stat-content">
+                <h3>${{ "%.2f"|format(summary.total_value) }}</h3>
+                <p>Total Value</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-exclamation-triangle"></i>
+            <div class="stat-content">
+                <h3>{{ summary.low_stock_count }}</h3>
+                <p>Low Stock Alerts</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Alerts -->
+    {% if alerts %}
+    <div class="dashboard-section">
+        <h2><i class="fas fa-bell"></i> Recent Alerts</h2>
+        <div class="alerts-list">
+            {% for alert in alerts %}
+            <div class="alert-item {{ alert.severity }}">
+                <i class="fas fa-{{ 'box' if alert.type == 'low_stock' else 'calendar-times' }}"></i>
+                <div class="alert-content">
+                    <strong>{{ alert.item }}</strong>
+                    <p>{{ alert.message }}</p>
+                </div>
             </div>
             {% endfor %}
-        {% else %}
-            <div class="empty-state">
-                <i class="fas fa-upload"></i>
-                <p>Upload data to view price comparisons</p>
-            </div>
-        {% endif %}
+        </div>
+        <a href="{{ url_for('main.analytics') }}" class="view-all-link">View All Analytics →</a>
     </div>
-</div>
-
-<!-- Stock Tracker Card -->
-<div class="dashboard-card">
-    <h2><i class="fas fa-boxes"></i> Stock Tracker</h2>
-    <div class="card-content">
-        {% if inventory %}
-            {% for item in inventory[:3] %}
-            <div class="stock-item">
-                <h3>{{ item.name }}</h3>
-                <p>Stock: {{ item.quantity }} {{ item.unit }}</p>
-            </div>
-            {% endfor %}
-        {% else %}
-            <div class="empty-state">
-                <i class="fas fa-upload"></i>
-                <p>Upload data to view inventory</p>
-            </div>
-        {% endif %}
-    </div>
-</div>
-
-<!-- Stock Alerts Card -->
-<div class="dashboard-card">
-    <h2><i class="fas fa-bell"></i> Stock Alerts</h2>
-    <div class="card-content">
-        {% if alerts %}
-            {% for alert in alerts[:3] %}
-            <div class="alert-item {{ 'stock-alert' if alert.type == 'low_stock' else 'expiry-alert' }}">
-                <p>{{ alert.item }}: {{ alert.message }}</p>
-            </div>
-            {% endfor %}
-        {% else %}
-            <div class="empty-state">
-                <i class="fas fa-upload"></i>
-                <p>Upload data to view alerts</p>
-            </div>
-        {% endif %}
-    </div>
-</div>
-
-<!-- Recommendations Card -->
-<div class="dashboard-card">
-    <h2><i class="fas fa-lightbulb"></i> Recommendations</h2>
-    <div class="card-content">
-        {% if recommendations %}
-            {% for rec in recommendations[:3] %}
-            <div class="recommendation">
-                <p>{{ rec.title }}: {{ rec.description }}</p>
-            </div>
-            {% endfor %}
-        {% else %}
-            <div class="empty-state">
-                <i class="fas fa-upload"></i>
-                <p>Upload data to get recommendations</p>
-            </div>
-        {% endif %}
-    </div>
-</div>
     {% endif %}
+    
+    <!-- Trending Items -->
+    {% if trending %}
+    <div class="dashboard-section">
+        <h2><i class="fas fa-fire"></i> Top 5 Items</h2>
+        <div class="trending-list">
+            {% for item in trending %}
+            <div class="trending-item">
+                <span class="rank">#{{ loop.index }}</span>
+                <div class="item-info">
+                    <strong>{{ item.item_name }}</strong>
+                    <small>Qty: {{ item.quantity }}</small>
+                </div>
+                <span class="item-value">${{ "%.2f"|format(item.total_value) }}</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</section>
+
+<style>
+.dashboard-container {
+    padding: 1rem 0;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem 5%;
+    background: linear-gradient(135deg, var(--primary) 0%, #2980b9 100%);
+    box-shadow: var(--shadow);
+    margin-bottom: 2rem;
+    color: white;
+}
+
+.dashboard-header h1 {
+    color: white;
+    font-size: 2rem;
+    margin: 0;
+}
+
+.dashboard-header .btn-primary {
+    background: white;
+    color: var(--primary);
+    border: none;
+    padding: 0.8rem 1.5rem;
+    font-weight: 600;
+    transition: transform 0.2s;
+}
+
+.dashboard-header .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    padding: 0 5% 2rem;
+}
+
+.stat-card {
+    background: var(--white);
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    transition: all 0.3s ease;
+    border-left: 5px solid var(--primary);
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.stat-card:nth-child(1) {
+    border-color: #3498db;
+}
+
+.stat-card:nth-child(1) i {
+    color: #3498db;
+}
+
+.stat-card:nth-child(2) {
+    border-color: #27ae60;
+}
+
+.stat-card:nth-child(2) i {
+    color: #27ae60;
+}
+
+.stat-card:nth-child(3) {
+    border-color: #e74c3c;
+}
+
+.stat-card:nth-child(3) i {
+    color: #e74c3c;
+}
+
+.stat-card i {
+    font-size: 3rem;
+    opacity: 0.9;
+}
+
+.stat-content h3 {
+    font-size: 2.5rem;
+    margin: 0;
+    color: var(--dark);
+    font-weight: 700;
+}
+
+.stat-content p {
+    margin: 0.5rem 0 0;
+    color: var(--gray);
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.dashboard-section {
+    background: var(--white);
+    padding: 2rem;
+    margin: 0 5% 2rem;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.dashboard-section h2 {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.5rem;
+    color: var(--dark);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.dashboard-section h2 i {
+    color: var(--primary);
+}
+
+.alerts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.alert-item {
+    display: flex;
+    gap: 1.2rem;
+    padding: 1.2rem;
+    border-radius: 10px;
+    border-left: 5px solid;
+    transition: transform 0.2s;
+}
+
+.alert-item:hover {
+    transform: translateX(5px);
+}
+
+.alert-item i {
+    font-size: 1.5rem;
+}
+
+.alert-item.high {
+    background: linear-gradient(90deg, #FFEBEE 0%, #fff 100%);
+    border-color: #F44336;
+}
+
+.alert-item.high i {
+    color: #F44336;
+}
+
+.alert-item.medium {
+    background: linear-gradient(90deg, #FFF3E0 0%, #fff 100%);
+    border-color: #FF9800;
+}
+
+.alert-item.medium i {
+    color: #FF9800;
+}
+
+.alert-content strong {
+    display: block;
+    font-size: 1.1rem;
+    margin-bottom: 0.3rem;
+    color: var(--dark);
+}
+
+.alert-content p {
+    margin: 0;
+    color: #666;
+    font-size: 0.95rem;
+}
+
+.trending-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.trending-item {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.2rem;
+    background: linear-gradient(90deg, #f8f9fa 0%, #fff 100%);
+    border-radius: 10px;
+    transition: all 0.3s;
+    border-left: 4px solid var(--primary);
+}
+
+.trending-item:hover {
+    transform: translateX(8px);
+    background: linear-gradient(90deg, #e8f4f8 0%, #fff 100%);
+}
+
+.rank {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary);
+    min-width: 50px;
+    text-align: center;
+    background: rgba(52, 152, 219, 0.1);
+    padding: 0.5rem;
+    border-radius: 8px;
+}
+
+.item-info {
+    flex: 1;
+}
+
+.item-info strong {
+    display: block;
+    font-size: 1.1rem;
+    color: var(--dark);
+    margin-bottom: 0.3rem;
+}
+
+.item-info small {
+    color: var(--gray);
+    font-size: 0.9rem;
+}
+
+.item-value {
+    font-weight: 700;
+    color: #27ae60;
+    font-size: 1.3rem;
+}
+
+.view-all-link {
+    display: inline-block;
+    margin-top: 1.5rem;
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+    padding: 0.8rem 1.5rem;
+    border: 2px solid var(--primary);
+    border-radius: 8px;
+    transition: all 0.3s;
+}
+
+.view-all-link:hover {
+    background: var(--primary);
+    color: white;
+    transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+    .dashboard-header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
 </section>
 {% endblock %}

@@ -1,6 +1,59 @@
+# Python
 __pycache__/
-.idea/
-.ipynb_checkpoints/
-venv/
-uploads/
+*.py[cod]
 *.pyc
+*.pyo
+
+# Virtual Environment
+.venv/
+venv/
+env/
+ENV/
+
+# Environment Variables (IMPORTANT - Contains API keys!)
+.env
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Uploads & Data
+uploads/*
+processed/*
+csv files/*
+*.csv
+!sample_grocery_data.csv
+
+# Logs
+logs/
+*.log
+
+# ML Models
+models/*.pkl
+models/*.joblib
+models/*.h5
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Backup & Test Files
+*_old.*
+*_test.*
+test_*.py
+app_old.py
+test_mysql.py
+*.backup
+
+# Local Documentation
+PROJECT_STATUS.md
+QUICKSTART.md

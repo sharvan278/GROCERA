@@ -133,7 +133,7 @@
         <!-- 📁 Download Button -->
         {% if filename %}
         <div class="text-center mt-4">
-            <a href="{{ url_for('download_report') }}" class="btn btn-success">
+            <a href="{{ url_for('main.download_report') }}" class="btn btn-success">
                 <i class="fas fa-file-download"></i> Download Report
             </a>
         </div>
@@ -141,7 +141,7 @@
 
         <!-- 🧹 Clear Button -->
         <div class="results-actions text-center mt-2">
-            <form method="POST" action="{{ url_for('clear_data') }}">
+            <form method="POST" action="{{ url_for('main.clear_data') }}">
                 <button type="submit" class="btn btn-danger">
                     <i class="fas fa-trash-alt"></i> Clear Data / Upload New
                 </button>

@@ -20,9 +20,15 @@
         {% endwith %}
 
         <!-- Upload Form -->
-        <button onclick="window.location.href='{{ url_for('upload_file') }}'" class="cta-button">
-            <i class="fas fa-upload"></i> Upload CSV
+        {% if current_user.is_authenticated %}
+        <button onclick="window.location.href='{{ url_for('main.dashboard') }}'" class="cta-button">
+            <i class="fas fa-tachometer-alt"></i> Go to Dashboard
         </button>
+        {% else %}
+        <button onclick="window.location.href='{{ url_for('auth.login') }}'" class="cta-button">
+            <i class="fas fa-sign-in-alt"></i> Login to Get Started
+        </button>
+        {% endif %}
     </div>
 </section>
 
