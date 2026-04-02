@@ -6,8 +6,6 @@ Uses time series analysis and machine learning to predict future demand.
 
 import pandas as pd
 import numpy as np
-from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
-from sklearn.preprocessing import StandardScaler
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional
 from src.models.models import db, InventoryItem, PriceHistory
@@ -18,8 +16,14 @@ class DemandForecastingService:
     """Service for predicting product demand using ML"""
     
     def __init__(self):
-        self.model = GradientBoostingRegressor(n_estimators=100, random_state=42)
-        self.scaler = StandardScaler()
+        try:
+            from sklearn.ensemble import GradientBoostingRegressor
+            from sklearn.preprocessing import StandardScaler
+            self.model = GradientBoostingRegressor(n_estimators=100, random_state=42)
+            self.scaler = StandardScaler()
+            self.has_ml = True
+        except ImportError:
+            self.has_ml = False
         self.trained = False
     
     def _get_historical_data(self, user_id: int, days: int = 90) -> pd.DataFrame:
@@ -109,16 +113,9 @@ class DemandForecastingService:
         Returns:
             Training results
         """
-        df = self._get_historical_data(user_id)
+        if not self.has_ml:
+            return {'success': False, 'error': 'Machine learning dependencies (scikit-learn) are not available'}
         
-        if df.empty or len(df) < 10:
-            return {'success': False, 'error': 'Insufficient historical data'}
-        
-        df = self._extract_features(df)
-        
-        # Feature columns
-        feature_cols = [
-            'price', 'day_of_week', 'day_of_month', 'month', 'is_weekend',
             'price_change', 'price_volatility', 'quantity_lag_1', 'quantity_lag_7',
             'quantity_mean_7d', 'quantity_std_7d', 'stock_velocity'
         ]
@@ -160,6 +157,9 @@ class DemandForecastingService:
         Returns:
             Demand predictions
         """
+        if not self.has_ml:
+            return {'success': False, 'error': 'Machine learning dependencies (scikit-learn) are not available'}
+
         if not self.trained:
             return {'success': False, 'error': 'Model not trained'}
         

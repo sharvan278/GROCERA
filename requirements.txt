@@ -19,8 +19,8 @@ numpy>=1.26.0,<2.1
 openpyxl>=3.0.0
 
 # Machine Learning
-scikit-learn==1.6.1
-joblib
+# scikit-learn==1.6.1
+# joblib
 
 # AI Integration
 openai>=1.0.0
@@ -40,7 +40,7 @@ stripe==7.9.0
 
 # Web Scraping & HTTP
 beautifulsoup4==4.12.3
-selenium==4.16.0
+# selenium==4.16.0
 lxml==5.1.0
 
 # PDF Generation
@@ -51,4 +51,4 @@ PyPDF2==3.0.1
 python-barcode==0.15.1
 qrcode==7.4.2
 Pillow==10.2.0
-pyzbar==0.1.9
+# pyzbar==0.1.9

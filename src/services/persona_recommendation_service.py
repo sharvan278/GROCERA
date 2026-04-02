@@ -4,9 +4,6 @@ Persona-Based Recommendation Service
 User segmentation and personalized product recommendations.
 """
 
-import numpy as np
-from sklearn.cluster import KMeans
-from sklearn.preprocessing import StandardScaler
 from typing import Dict, List, Optional
 from src.models.models import db, User, InventoryItem
 from sqlalchemy import text
@@ -15,11 +12,8 @@ from collections import Counter
 
 class PersonaRecommendationService:
     """Service for persona-based recommendations"""
-    
+
     def __init__(self):
-        self.scaler = StandardScaler()
-        self.kmeans = KMeans(n_clusters=3, random_state=42)
-        self.personas = {
             0: 'Budget Conscious',
             1: 'Premium Shopper',
             2: 'Balanced Buyer'
