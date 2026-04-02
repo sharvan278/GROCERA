@@ -44,6 +44,10 @@ class Config:
     _database_url = os.getenv('DATABASE_URL', '').strip()
     if _database_url.startswith('postgres://'):
         _database_url = _database_url.replace('postgres://', 'postgresql://', 1)
+    if _database_url.startswith('mysql://'):
+        _database_url = _database_url.replace('mysql://', 'mysql+pymysql://', 1)
+    if _database_url.startswith('mariadb://'):
+        _database_url = _database_url.replace('mariadb://', 'mysql+pymysql://', 1)
 
     SQLALCHEMY_DATABASE_URI = (
         _database_url
