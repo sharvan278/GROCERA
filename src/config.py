@@ -137,7 +137,7 @@ class Config:
     
     # ============= Logging Configuration =============
     LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')
-    LOG_FILE = os.getenv('LOG_FILE', 'logs/grocera.log')
+    LOG_FILE = os.getenv('LOG_FILE', '/tmp/grocera.log' if _is_vercel else 'logs/grocera.log')
     
     @classmethod
     def validate_config(cls) -> bool:
@@ -166,12 +166,20 @@ class Config:
         directories = [
             cls.UPLOAD_FOLDER,
             cls.PROCESSED_FOLDER,
-            'logs',
-            'models'
         ]
-        
+
+        # In non-serverless environments we keep local app directories.
+        if not cls._is_vercel:
+            directories.extend(['logs', 'models'])
+
         for directory in directories:
-            os.makedirs(directory, exist_ok=True)
+            try:
+                os.makedirs(directory, exist_ok=True)
+            except OSError as exc:
+                # Vercel serverless filesystem is read-only except /tmp.
+                if cls._is_vercel and 'Read-only file system' in str(exc):
+                    continue
+                raise
     
     @classmethod
     def get_database_name(cls) -> Optional[str]:
