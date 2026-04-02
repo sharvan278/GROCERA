@@ -4,7 +4,7 @@ Handles user registration, login, logout
 """
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
-from models import db, User, InventoryItem, Alert
+from src.models.models import db, User, InventoryItem, Alert
 from werkzeug.security import generate_password_hash
 
 auth_bp = Blueprint('auth', __name__)
@@ -13,7 +13,7 @@ auth_bp = Blueprint('auth', __name__)
 def register():
     """User registration"""
     if current_user.is_authenticated:
-        return redirect(url_for('index'))
+        return redirect(url_for('main.dashboard'))
     
     if request.method == 'POST':
         username = request.form.get('username', '').strip()
@@ -55,9 +55,8 @@ def register():
             db.session.add(new_user)
             db.session.commit()
             
-            flash(f'Registration successful! Welcome {username}', 'success')
-            login_user(new_user)
-            return redirect(url_for('main.index'))
+            flash('Account created sucessfully', 'success')
+            return redirect(url_for('auth.login'))
             
         except Exception as e:
             db.session.rollback()
@@ -98,7 +97,7 @@ def login():
             return redirect(next_page) if next_page else redirect(url_for('main.dashboard'))
         else:
             if not user:
-                flash('Account not found. Please register if you are new!', 'error')
+                flash('Your account is not registered with us. Please register first and then login.', 'error')
             else:
                 flash('Invalid password. Please try again.', 'error')
             return redirect(url_for('auth.login'))
@@ -124,7 +123,6 @@ def profile():
     inventory_count = InventoryItem.query.filter_by(user_id=current_user.id).count()
     alerts_count = Alert.query.filter_by(user_id=current_user.id, is_read=False).count()
     
-    from models import InventoryItem
     total_value = db.session.query(
         db.func.sum(InventoryItem.price * InventoryItem.quantity)
     ).filter_by(user_id=current_user.id).scalar() or 0

@@ -2,10 +2,10 @@
 Analytics Service - Price comparisons, alerts, recommendations
 Single Responsibility: Handle all analytics and insights
 """
-from models import db, InventoryItem, Alert
+from src.models.models import db, InventoryItem, Alert
 from datetime import datetime, timedelta
 from typing import List, Dict
-from config import Config
+from src.config import Config
 
 
 class AnalyticsService:

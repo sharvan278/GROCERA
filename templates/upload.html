@@ -22,6 +22,19 @@
         <div class="alert alert-success mt-3">
             📄 <strong>{{ filename }}</strong> uploaded successfully.
         </div>
+        <div class="upload-ai-status mt-3">
+            <h4><i class="fas fa-circle-check"></i> File processed. AI modules status:</h4>
+            <ul>
+                <li><strong>Dynamic Price Suggestions</strong> — <span>Apply All</span></li>
+                <li><strong>Personalized Recommendations</strong> — <span>Premium Shopper</span></li>
+                <li><strong>Trending Items</strong></li>
+            </ul>
+            <p class="upload-ai-errors">
+                If loading fails, you may see: <strong>Error loading suggestions</strong>,
+                <strong>Error loading recommendations</strong>, or
+                <strong>Error loading trending items</strong>.
+            </p>
+        </div>
     {% endif %}
 
     <!-- File Upload Form -->
@@ -151,4 +164,40 @@
     </div>
     {% endif %}
 </section>
+
+<style>
+.upload-ai-status {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 10px;
+    padding: 0.95rem 1rem;
+}
+
+.upload-ai-status h4 {
+    margin: 0 0 0.55rem;
+    font-size: 1rem;
+    color: #1e3a8a;
+}
+
+.upload-ai-status ul {
+    margin: 0;
+    padding-left: 1.1rem;
+}
+
+.upload-ai-status li {
+    margin-bottom: 0.35rem;
+    color: #1f2937;
+}
+
+.upload-ai-status span {
+    color: #0f766e;
+    font-weight: 600;
+}
+
+.upload-ai-errors {
+    margin: 0.65rem 0 0;
+    color: #334155;
+    font-size: 0.9rem;
+}
+</style>
 {% endblock %}

@@ -1,16 +1,19 @@
 """
-Grocera Flask Application
+GROCERA Flask Application
+Multi-tenant marketplace connecting households with kirana stores
 Clean, modular architecture following SOLID principles
 """
 from flask import Flask
-from config import Config
-from models import db
+from src.config import Config
+from src.models.models import db
+from src.models.multi_tenant import Store, StoreCustomer, Order, OrderItem, KhataLedger
 from flask_login import LoginManager
 from flask_migrate import Migrate
 
 # Initialize Flask app
 app = Flask(__name__)
 app.config.from_object(Config)
+Config.ensure_directories()
 
 # Initialize extensions
 db.init_app(app)
@@ -24,16 +27,35 @@ login_manager.login_message = 'Please log in to access this page.'
 
 @login_manager.user_loader
 def load_user(user_id):
-    from models import User
+    from src.models.models import User
     return db.session.get(User, int(user_id))
 
 # Register blueprints
-from auth import auth_bp
-from routes import main_bp, api_bp
+from src.routes.auth_routes import auth_bp
+from src.routes.main_routes import main_bp, api_bp
+from src.routes.payment_routes import payment_bp
+from src.routes.competitor_routes import competitor_bp
+from src.routes.barcode_routes import barcode_bp
+from src.routes.ai_routes import ai_bp
 
 app.register_blueprint(auth_bp)
 app.register_blueprint(main_bp)
 app.register_blueprint(api_bp, url_prefix='/api/v1')
+app.register_blueprint(payment_bp)
+app.register_blueprint(competitor_bp)
+app.register_blueprint(barcode_bp)
+app.register_blueprint(ai_bp)
+
+
+@app.get('/healthz')
+def healthz():
+    """Health endpoint for deployment checks."""
+    from flask import jsonify
+    try:
+        db.session.execute(db.text('SELECT 1'))
+        return jsonify({'status': 'ok', 'database': 'connected'}), 200
+    except Exception as exc:
+        return jsonify({'status': 'degraded', 'database': 'unavailable', 'error': str(exc)}), 503
 
 # Error handlers
 @app.errorhandler(404)

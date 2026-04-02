@@ -5,11 +5,13 @@ Separated from app.py for better organization
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
-from services import inventory_service, analytics_service, grok_service
-from models import db
+from src.services.inventory_service import inventory_service
+from src.services.analytics_service import analytics_service
+from src.services.ai_service import grok_service
+from src.models.models import db
 import pandas as pd
 import os
-from config import Config
+from src.config import Config
 
 # Main blueprint for web pages
 main_bp = Blueprint('main', __name__)
@@ -161,7 +163,7 @@ def chat():
 @login_required
 def view_cart():
     """View shopping cart"""
-    from models import Cart
+    from src.models.models import Cart
     cart_items = Cart.query.filter_by(user_id=current_user.id).all()
     
     total = sum(item.subtotal for item in cart_items)
@@ -173,7 +175,7 @@ def view_cart():
 @login_required
 def add_to_cart(item_id):
     """Add item to cart"""
-    from models import Cart, InventoryItem
+    from src.models.models import Cart, InventoryItem
     
     quantity = request.form.get('quantity', 1, type=int)
     
@@ -202,7 +204,7 @@ def add_to_cart(item_id):
 @login_required
 def update_cart(cart_id):
     """Update cart item quantity"""
-    from models import Cart
+    from src.models.models import Cart
     
     quantity = request.form.get('quantity', 1, type=int)
     cart_item = Cart.query.filter_by(id=cart_id, user_id=current_user.id).first()
@@ -224,7 +226,7 @@ def update_cart(cart_id):
 @login_required
 def remove_from_cart(cart_id):
     """Remove item from cart"""
-    from models import Cart
+    from src.models.models import Cart
     
     cart_item = Cart.query.filter_by(id=cart_id, user_id=current_user.id).first()
     if cart_item:
@@ -239,7 +241,7 @@ def remove_from_cart(cart_id):
 @login_required
 def clear_cart():
     """Clear entire cart"""
-    from models import Cart
+    from src.models.models import Cart
     
     Cart.query.filter_by(user_id=current_user.id).delete()
     db.session.commit()
@@ -377,7 +379,7 @@ def export_stock_report():
 def clear_data():
     """Clear all user inventory data"""
     if current_user.role == 'admin':
-        from models import InventoryItem, Alert, Cart
+        from src.models.models import InventoryItem, Alert, Cart
         
         InventoryItem.query.filter_by(user_id=current_user.id).delete()
         Alert.query.filter_by(user_id=current_user.id).delete()

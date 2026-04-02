@@ -11,6 +11,33 @@
 
 ---
 
+## ▲ Deploy on Vercel
+
+This project is now configured for Vercel with:
+- [api/index.py](api/index.py) as the serverless entry point
+- [vercel.json](vercel.json) route/build configuration
+
+### Steps
+
+1. Push the repository to GitHub.
+2. Import the repository in Vercel.
+3. Set these environment variables in Vercel Project Settings:
+        - `SECRET_KEY` = strong random value
+        - `FLASK_ENV` = `production`
+        - `DEBUG` = `False`
+        - `DATABASE_URL` = your production DB URL (recommended: managed PostgreSQL/MySQL)
+        - `GROK_API_KEY` (if AI features are required)
+        - `STRIPE_SECRET_KEY` (if payment features are required)
+4. Deploy.
+
+### Notes
+
+- On Vercel, temporary writable storage is `/tmp`.
+- If `DATABASE_URL` is missing, the app falls back to `sqlite:////tmp/grocera.db` for basic boot.
+- For production, always use an external persistent database.
+
+---
+
 ## 🧰 Prerequisites
 
 - Python 3.9 must be installed on your machine. (https://www.python.org/downloads/release/python-390/)

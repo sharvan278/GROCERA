@@ -5,15 +5,16 @@ Handles all AI-powered features: chatbot, recommendations, bundling
 import os
 import requests
 from typing import List, Dict, Optional
-from config import Config
+from src.config import Config
 
 class GrokAIService:
     """Service class for Grok AI integration"""
     
     def __init__(self):
-        self.api_key = Config.GROK_API_KEY
-        self.base_url = "https://api.x.ai/v1"
-        self.model = "grok-beta"
+        self.api_key = Config.AI_API_KEY
+        self.base_url = Config.AI_API_BASE_URL.rstrip('/')
+        self.model = Config.AI_MODEL
+        self.provider = Config.AI_PROVIDER
         
     def chat_completion(self, prompt: str, context: Optional[str] = None) -> str:
         """
@@ -72,7 +73,7 @@ When answering questions:
                 f"{self.base_url}/chat/completions",
                 headers=headers,
                 json=payload,
-                timeout=30
+                timeout=Config.AI_TIMEOUT
             )
             
             if response.status_code == 200:

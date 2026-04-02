@@ -38,12 +38,16 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False, index=True)
     password_hash = db.Column(db.String(255), nullable=False)
     role = db.Column(db.String(20), default='viewer')  # admin, manager, viewer
+    user_type = db.Column(db.String(20), default='customer')  # store_owner, customer, admin
+    linked_store_id = db.Column(db.Integer, db.ForeignKey('stores.id'), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     is_active = db.Column(db.Boolean, default=True)
     
     # Relationships
     inventory_items = db.relationship('InventoryItem', backref='owner', lazy='dynamic', cascade='all, delete-orphan')
     alerts = db.relationship('Alert', backref='user', lazy='dynamic', cascade='all, delete-orphan')
+    owned_store = db.relationship('Store', foreign_keys='Store.owner_id', backref='owner', uselist=False)
+    linked_store = db.relationship('Store', foreign_keys='[User.linked_store_id]', backref='linked_customers')
     
     def set_password(self, password: str) -> None:
         """Hash and set user password."""
@@ -100,6 +104,7 @@ class InventoryItem(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
+    store_id = db.Column(db.Integer, db.ForeignKey('stores.id'), nullable=True, index=True)  # Multi-tenant support
     item_name = db.Column(db.String(200), nullable=False, index=True)
     category = db.Column(db.String(100), index=True)
     price = db.Column(db.Float, nullable=False)
@@ -110,11 +115,13 @@ class InventoryItem(db.Model):
     expiry_date = db.Column(db.Date, index=True)
     base_price = db.Column(db.Float)
     is_discounted = db.Column(db.Boolean, default=False)
+    barcode = db.Column(db.String(100), unique=True, index=True)  # Barcode/UPC/EAN code
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     # Relationships
     price_history = db.relationship('PriceHistory', backref='item', lazy='dynamic', cascade='all, delete-orphan')
+    store = db.relationship('Store', foreign_keys=[store_id], backref='inventory')
     
     @property
     def total_value(self) -> float:
@@ -244,3 +251,49 @@ class Cart(db.Model):
     
     def __repr__(self) -> str:
         return f'<Cart User:{self.user_id} Item:{self.item_id} Qty:{self.quantity}>'
+
+
+# Note: Order and OrderItem models moved to multi_tenant.py for better multi-tenant support
+# Keeping this for backward compatibility - import from multi_tenant instead
+
+
+class CompetitorPrice(db.Model):
+    """
+    Competitor pricing data model for price comparison.
+    
+    Attributes:
+        id: Primary key
+        item_id: Foreign key to InventoryItem
+        competitor_name: Store/website name
+        competitor_url: Product URL
+        price: Competitor's price
+        in_stock: Stock availability
+        last_checked: Last scrape timestamp
+    """
+    __tablename__ = 'competitor_prices'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    item_id = db.Column(db.Integer, db.ForeignKey('inventory.id'), nullable=False, index=True)
+    competitor_name = db.Column(db.String(200), nullable=False)
+    competitor_url = db.Column(db.String(500))
+    price = db.Column(db.Float, nullable=False)
+    in_stock = db.Column(db.Boolean, default=True)
+    last_checked = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+    
+    # Relationships
+    item = db.relationship('InventoryItem', backref='competitor_prices')
+    
+    @property
+    def price_difference(self) -> Optional[float]:
+        """Calculate price difference with our price."""
+        if self.item:
+            return round(self.item.price - self.price, 2)
+        return None
+    
+    @property
+    def is_cheaper(self) -> bool:
+        """Check if competitor is cheaper."""
+        return self.price_difference > 0 if self.price_difference else False
+    
+    def __repr__(self) -> str:
+        return f'<CompetitorPrice {self.competitor_name} - ${self.price}>'

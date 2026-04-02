@@ -1,0 +1,428 @@
+{% extends "base.html" %}
+
+{% block title %}Personalized Recommendations - Grocera{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1><i class="fas fa-lightbulb"></i> Personalized Recommendations</h1>
+        <p class="subtitle">Products curated based on your shopping behavior</p>
+    </div>
+    <div class="persona-info">
+        <div class="persona-label">Your Shopping Persona</div>
+        <div class="persona-badge" id="persona-type">Loading...</div>
+    </div>
+</div>
+
+<div class="recommendations-container">
+    <!-- For You Section -->
+    <section class="rec-section">
+        <h2><i class="fas fa-heart"></i> Recommended For You</h2>
+        <div id="for-you" class="items-grid">
+            <div class="loading">Loading recommendations...</div>
+        </div>
+    </section>
+
+    <!-- Trending Section -->
+    <section class="rec-section">
+        <h2><i class="fas fa-fire"></i> Trending in Your Category</h2>
+        <div id="trending" class="items-grid">
+            <div class="loading">Loading trending items...</div>
+        </div>
+    </section>
+
+    <!-- Based on Recent Purchases -->
+    <section class="rec-section">
+        <h2><i class="fas fa-shopping-bag"></i> Based on Your Recent Purchases</h2>
+        <div id="recent-based" class="items-grid">
+            <div class="loading">Loading suggestions...</div>
+        </div>
+    </section>
+</div>
+
+<style>
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem 5%;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: var(--white);
+    margin-bottom: 2rem;
+}
+
+.subtitle {
+    margin-top: 0.5rem;
+    opacity: 0.9;
+    font-size: 1.1rem;
+}
+
+.persona-info {
+    text-align: right;
+}
+
+.persona-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    margin-bottom: 0.5rem;
+}
+
+.persona-badge {
+    background: var(--white);
+    color: var(--primary-dark);
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.recommendations-container {
+    padding: 0 5% 3rem;
+}
+
+.rec-section {
+    margin-bottom: 3rem;
+}
+
+.rec-section h2 {
+    font-size: 1.5rem;
+    color: var(--primary-dark);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.items-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.item-card {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.item-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary), #4CAF50);
+}
+
+.item-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+}
+
+.item-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--primary-dark);
+    margin-bottom: 0.5rem;
+}
+
+.item-category {
+    color: var(--gray);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.item-price {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #4CAF50;
+    margin-bottom: 1rem;
+}
+
+.item-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #E0E0E0;
+}
+
+.stat {
+    font-size: 0.85rem;
+}
+
+.stat-label {
+    color: var(--gray);
+}
+
+.stat-value {
+    font-weight: 600;
+    color: var(--primary-dark);
+}
+
+.recommendation-score {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: var(--white);
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.recommendation-reason {
+    background: #F5F5F5;
+    padding: 0.75rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: var(--gray);
+    margin-bottom: 1rem;
+}
+
+.item-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-add-cart {
+    flex: 1;
+    padding: 0.75rem;
+    background: #4CAF50;
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition);
+    font-weight: 600;
+}
+
+.btn-add-cart:hover {
+    background: #45a049;
+    transform: translateY(-2px);
+}
+
+.btn-details {
+    padding: 0.75rem;
+    background: var(--primary);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-details:hover {
+    background: var(--primary-dark);
+}
+
+.loading {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 3rem;
+    color: var(--gray);
+}
+
+.empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 3rem;
+}
+
+.empty-icon {
+    font-size: 4rem;
+    color: var(--gray);
+    margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+    .page-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .persona-info {
+        text-align: center;
+        margin-top: 1rem;
+    }
+    
+    .items-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script>
+async function loadPersona() {
+    try {
+        const response = await fetch('/ai/persona/identify');
+        const data = await response.json();
+        
+        if (data.success) {
+            document.getElementById('persona-type').textContent = data.persona;
+        }
+    } catch (error) {
+        console.error('Error loading persona:', error);
+    }
+}
+
+async function loadRecommendations() {
+    try {
+        const response = await fetch('/ai/recommendations/data');
+        const data = await response.json();
+        
+        const container = document.getElementById('for-you');
+        
+        if (data.success && data.recommendations.length > 0) {
+            container.innerHTML = data.recommendations.map(item => createItemCard(item)).join('');
+        } else {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">🛒</div>
+                    <h3>Start Shopping to Get Recommendations</h3>
+                    <p>Add items to your cart to receive personalized suggestions</p>
+                </div>
+            `;
+        }
+    } catch (error) {
+        document.getElementById('for-you').innerHTML = '<div class="loading">Error loading recommendations</div>';
+    }
+}
+
+async function loadTrending() {
+    try {
+        const response = await fetch('/ai/trending');
+        const data = await response.json();
+        
+        const container = document.getElementById('trending');
+        
+        if (data.success && data.trending.length > 0) {
+            container.innerHTML = data.trending.map(item => createItemCard(item, true)).join('');
+        } else {
+            container.innerHTML = '<div class="loading">No trending items available</div>';
+        }
+    } catch (error) {
+        document.getElementById('trending').innerHTML = '<div class="loading">Error loading trending items</div>';
+    }
+}
+
+async function loadRecentBased() {
+    try {
+        // Get recent purchases and find cross-sell
+        const inventoryResponse = await fetch('/api/v1/inventory?per_page=5');
+        const inventoryData = await inventoryResponse.json();
+        
+        const container = document.getElementById('recent-based');
+        container.innerHTML = '';
+        
+        let allCrossSell = [];
+        
+        for (const item of inventoryData.items.slice(0, 3)) {
+            const response = await fetch(`/ai/recommendations/cross-sell/${item.id}`);
+            const data = await response.json();
+            
+            if (data.success && data.recommendations.length > 0) {
+                allCrossSell.push(...data.recommendations);
+            }
+        }
+        
+        // Remove duplicates
+        const uniqueCrossSell = Array.from(new Map(allCrossSell.map(item => [item.id, item])).values());
+        
+        if (uniqueCrossSell.length > 0) {
+            container.innerHTML = uniqueCrossSell.slice(0, 6).map(item => createItemCard(item)).join('');
+        } else {
+            container.innerHTML = '<div class="loading">No suggestions available yet</div>';
+        }
+    } catch (error) {
+        document.getElementById('recent-based').innerHTML = '<div class="loading">Error loading suggestions</div>';
+    }
+}
+
+function createItemCard(item, isTrending = false) {
+    return `
+        <div class="item-card">
+            <div class="item-name">${item.item_name}</div>
+            <div class="item-category">${item.category || 'Uncategorized'}</div>
+            <div class="item-price">$${item.price.toFixed(2)}</div>
+            
+            ${item.score !== undefined ? `
+                <div class="recommendation-score">
+                    Match Score: ${(item.score * 10).toFixed(1)}/10
+                </div>
+            ` : ''}
+            
+            ${item.reason ? `
+                <div class="recommendation-reason">
+                    <i class="fas fa-info-circle"></i> ${item.reason}
+                </div>
+            ` : ''}
+            
+            <div class="item-stats">
+                <div class="stat">
+                    <div class="stat-label">In Stock</div>
+                    <div class="stat-value">${item.quantity} ${item.unit || 'units'}</div>
+                </div>
+                ${isTrending ? `
+                    <div class="stat">
+                        <div class="stat-label">Popular</div>
+                        <div class="stat-value">🔥 Trending</div>
+                    </div>
+                ` : `
+                    <div class="stat">
+                        <div class="stat-label">Value</div>
+                        <div class="stat-value">$${(item.price * item.quantity).toFixed(2)}</div>
+                    </div>
+                `}
+            </div>
+            
+            <div class="item-actions">
+                <button class="btn-add-cart" onclick="addToCart(${item.id})">
+                    <i class="fas fa-cart-plus"></i> Add to Cart
+                </button>
+                <button class="btn-details" onclick="viewDetails(${item.id})">
+                    <i class="fas fa-info"></i>
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+async function addToCart(itemId) {
+    try {
+        const response = await fetch(`/cart/add/${itemId}`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({quantity: 1})
+        });
+        
+        if (response.ok) {
+            alert('✅ Added to cart!');
+        } else {
+            alert('Error adding to cart');
+        }
+    } catch (error) {
+        alert('Error adding to cart');
+    }
+}
+
+function viewDetails(itemId) {
+    window.location.href = `/inventory?item=${itemId}`;
+}
+
+// Load all data on page load
+window.addEventListener('DOMContentLoaded', () => {
+    loadPersona();
+    loadRecommendations();
+    loadTrending();
+    loadRecentBased();
+});
+</script>
+{% endblock %}

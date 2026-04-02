@@ -2,7 +2,7 @@
 Inventory Service - Business logic for inventory management
 Single Responsibility: Handle all inventory-related operations
 """
-from models import db, InventoryItem, PriceHistory
+from src.models.models import db, InventoryItem, PriceHistory
 from datetime import datetime
 from typing import List, Dict, Optional
 import pandas as pd

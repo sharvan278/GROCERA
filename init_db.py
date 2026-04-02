@@ -49,7 +49,7 @@ def init_tables():
 def create_admin_user():
     """Create a default admin user"""
     try:
-        from models import User
+        from src.models.models import User
         
         with app.app_context():
             # Check if admin exists

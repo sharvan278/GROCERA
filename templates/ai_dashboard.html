@@ -1,0 +1,523 @@
+{% extends "base.html" %}
+
+{% block title %}AI Dashboard - Grocera{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-brain"></i> AI-Powered Intelligence Dashboard</h1>
+    <button onclick="refreshAllData()" class="btn-primary">
+        <i class="fas fa-sync"></i> Refresh All
+    </button>
+</div>
+
+<div class="dashboard-container">
+    <!-- Demand Alerts Section -->
+    <div class="ai-section">
+        <div class="section-header">
+            <h2><i class="fas fa-exclamation-triangle"></i> Low Stock Alerts</h2>
+            <span class="badge" id="alerts-count">0</span>
+        </div>
+        <div id="demand-alerts" class="alerts-container">
+            <div class="loading">Loading alerts...</div>
+        </div>
+    </div>
+
+    <!-- Price Suggestions Section -->
+    <div class="ai-section">
+        <div class="section-header">
+            <h2><i class="fas fa-tag"></i> Dynamic Price Suggestions</h2>
+            <button onclick="applyAllPrices()" class="btn-secondary">
+                <i class="fas fa-check-double"></i> Apply All
+            </button>
+        </div>
+        <div id="price-suggestions" class="suggestions-container">
+            <div class="loading">Loading suggestions...</div>
+        </div>
+    </div>
+
+    <!-- Personalized Recommendations Section -->
+    <div class="ai-section full-width">
+        <div class="section-header">
+            <h2><i class="fas fa-lightbulb"></i> Personalized Recommendations</h2>
+            <span class="persona-badge" id="persona-type">Analyzing...</span>
+        </div>
+        <div id="recommendations" class="recommendations-grid">
+            <div class="loading">Loading recommendations...</div>
+        </div>
+    </div>
+
+    <!-- Trending Items Section -->
+    <div class="ai-section full-width">
+        <div class="section-header">
+            <h2><i class="fas fa-fire"></i> Trending Items</h2>
+        </div>
+        <div id="trending-items" class="trending-container">
+            <div class="loading">Loading trending items...</div>
+        </div>
+    </div>
+</div>
+
+<style>
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 5%;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    border-bottom: 1px solid #e2e8f0;
+    margin-bottom: 1.2rem;
+}
+
+.dashboard-container {
+    padding: 0 5% 2rem;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.ai-section {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 1.05rem;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+}
+
+.full-width {
+    grid-column: 1 / -1;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #F5F5F5;
+}
+
+.section-header h2 {
+    font-size: 1.3rem;
+    color: var(--primary-dark);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.badge {
+    background: #F44336;
+    color: var(--white);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.persona-badge {
+    background: var(--primary-light);
+    color: var(--primary-dark);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+.loading {
+    text-align: center;
+    padding: 1rem;
+    color: var(--gray);
+    background: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    border-radius: 10px;
+}
+
+.alert-item {
+    background: #FFF3E0;
+    border-left: 4px solid #FF9800;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+}
+
+.alert-item.critical {
+    background: #FFEBEE;
+    border-left-color: #F44336;
+}
+
+.alert-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.alert-title {
+    font-weight: 600;
+    font-size: 1.05rem;
+}
+
+.alert-details {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--gray);
+}
+
+.price-item {
+    background: #F5F5F5;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.price-info {
+    flex: 1;
+}
+
+.price-name {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.price-comparison {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.9rem;
+}
+
+.current-price {
+    text-decoration: line-through;
+    color: var(--gray);
+}
+
+.suggested-price {
+    color: #4CAF50;
+    font-weight: 600;
+}
+
+.price-change {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+}
+
+.price-change.positive {
+    background: #E8F5E9;
+    color: #4CAF50;
+}
+
+.price-change.negative {
+    background: #FFEBEE;
+    color: #F44336;
+}
+
+.btn-apply {
+    padding: 0.5rem 1rem;
+    background: var(--primary);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-apply:hover {
+    background: var(--primary-dark);
+}
+
+.recommendations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.rec-card {
+    background: linear-gradient(135deg, var(--primary-light) 0%, #E3F2FD 100%);
+    padding: 1.5rem;
+    border-radius: 12px;
+    transition: var(--transition);
+    cursor: pointer;
+}
+
+.rec-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.rec-title {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.rec-score {
+    display: inline-block;
+    background: var(--primary);
+    color: var(--white);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+}
+
+.trending-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.trending-card {
+    background: linear-gradient(135deg, #FFE0B2 0%, #FFECB3 100%);
+    padding: 1rem;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.trending-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.trending-name {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.trending-stats {
+    font-size: 0.85rem;
+    color: var(--gray);
+}
+
+@media (max-width: 768px) {
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.8rem;
+    }
+
+    .dashboard-container {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script>
+let priceSuggestions = [];
+
+async function refreshAllData() {
+    await Promise.all([
+        loadDemandAlerts(),
+        loadPriceSuggestions(),
+        loadRecommendations(),
+        loadTrendingItems()
+    ]);
+}
+
+async function loadDemandAlerts() {
+    try {
+        const response = await fetch('/ai/demand/alerts');
+        const data = await response.json();
+        
+        const container = document.getElementById('demand-alerts');
+        const badge = document.getElementById('alerts-count');
+        
+        if (data.success && data.alerts.length > 0) {
+            badge.textContent = data.alerts.length;
+            container.innerHTML = data.alerts.map(alert => `
+                <div class="alert-item ${alert.urgency === 'critical' ? 'critical' : ''}">
+                    <div class="alert-header">
+                        <span class="alert-title">${alert.item_name}</span>
+                        <span class="badge">${alert.urgency}</span>
+                    </div>
+                    <div class="alert-details">
+                        <div>Current Stock: ${alert.current_quantity}</div>
+                        <div>Reorder Point: ${alert.reorder_point}</div>
+                        <div>Predicted Demand: ${alert.predicted_demand}/day</div>
+                        <div>Stockout in: ${alert.days_until_stockout} days</div>
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            badge.textContent = '0';
+            container.innerHTML = '<div class="loading">✅ All items well-stocked!</div>';
+        }
+    } catch (error) {
+        document.getElementById('demand-alerts').innerHTML = '<div class="loading">Error loading alerts</div>';
+    }
+}
+
+async function loadPriceSuggestions() {
+    try {
+        const response = await fetch('/ai/pricing/train');
+        const data = await response.json();
+        
+        if (!data.success) {
+            document.getElementById('price-suggestions').innerHTML = '<div class="loading">No suggestions available</div>';
+            return;
+        }
+
+        // Get suggestions for all items
+        const inventoryResponse = await fetch('/api/v1/inventory?per_page=100');
+        const inventoryData = await inventoryResponse.json();
+        
+        priceSuggestions = [];
+        const container = document.getElementById('price-suggestions');
+        container.innerHTML = '';
+        
+        for (const item of inventoryData.items.slice(0, 10)) {
+            const suggestResponse = await fetch(`/ai/pricing/suggest/${item.id}`);
+            const suggest = await suggestResponse.json();
+            
+            if (suggest.success && suggest.suggested_price !== suggest.current_price) {
+                priceSuggestions.push({id: item.id, ...suggest});
+                
+                const changePercent = suggest.price_change;
+                const changeClass = changePercent > 0 ? 'positive' : 'negative';
+                
+                container.innerHTML += `
+                    <div class="price-item">
+                        <div class="price-info">
+                            <div class="price-name">${item.item_name}</div>
+                            <div class="price-comparison">
+                                <span class="current-price">$${suggest.current_price}</span>
+                                <span class="suggested-price">$${suggest.suggested_price}</span>
+                                <span class="price-change ${changeClass}">
+                                    ${changePercent > 0 ? '+' : ''}${changePercent}%
+                                </span>
+                            </div>
+                        </div>
+                        <button class="btn-apply" onclick="applySinglePrice(${item.id})">
+                            Apply
+                        </button>
+                    </div>
+                `;
+            }
+        }
+        
+        if (priceSuggestions.length === 0) {
+            container.innerHTML = '<div class="loading">✅ All prices optimized!</div>';
+        }
+    } catch (error) {
+        document.getElementById('price-suggestions').innerHTML = '<div class="loading">Error loading suggestions</div>';
+    }
+}
+
+async function loadRecommendations() {
+    try {
+        const personaResponse = await fetch('/ai/persona/identify');
+        const personaData = await personaResponse.json();
+        
+        if (personaData.success) {
+            document.getElementById('persona-type').textContent = personaData.persona;
+        }
+        
+        const response = await fetch('/ai/recommendations');
+        const data = await response.json();
+        
+        const container = document.getElementById('recommendations');
+        
+        if (data.success && data.recommendations.length > 0) {
+            container.innerHTML = data.recommendations.slice(0, 6).map(rec => `
+                <div class="rec-card" onclick="location.href='/inventory'">
+                    <div class="rec-title">${rec.item_name}</div>
+                    <div>$${rec.price} • ${rec.category}</div>
+                    <div class="rec-score">Score: ${rec.score.toFixed(2)}</div>
+                </div>
+            `).join('');
+        } else {
+            container.innerHTML = '<div class="loading">Build your shopping history for personalized recommendations</div>';
+        }
+    } catch (error) {
+        document.getElementById('recommendations').innerHTML = '<div class="loading">Error loading recommendations</div>';
+    }
+}
+
+async function loadTrendingItems() {
+    try {
+        // Use persona-based trending
+        const response = await fetch('/ai/trending');
+        
+        if (response.ok) {
+            const data = await response.json();
+            const container = document.getElementById('trending-items');
+            
+            if (data.success && data.trending.length > 0) {
+                container.innerHTML = data.trending.slice(0, 8).map(item => `
+                    <div class="trending-card">
+                        <div class="trending-icon">🔥</div>
+                        <div class="trending-name">${item.item_name}</div>
+                        <div class="trending-stats">$${item.price}</div>
+                    </div>
+                `).join('');
+            } else {
+                container.innerHTML = '<div class="loading">No trending data available</div>';
+            }
+        } else {
+            // Fallback to regular inventory
+            const invResponse = await fetch('/api/v1/inventory?per_page=8');
+            const invData = await invResponse.json();
+            
+            const container = document.getElementById('trending-items');
+            container.innerHTML = invData.items.map(item => `
+                <div class="trending-card">
+                    <div class="trending-icon">📦</div>
+                    <div class="trending-name">${item.item_name}</div>
+                    <div class="trending-stats">$${item.price}</div>
+                </div>
+            `).join('');
+        }
+    } catch (error) {
+        document.getElementById('trending-items').innerHTML = '<div class="loading">Error loading trending items</div>';
+    }
+}
+
+async function applySinglePrice(itemId) {
+    try {
+        const response = await fetch('/ai/pricing/apply', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({item_ids: [itemId], auto_apply: true})
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            alert('✅ Price updated successfully!');
+            await loadPriceSuggestions();
+        }
+    } catch (error) {
+        alert('Error applying price');
+    }
+}
+
+async function applyAllPrices() {
+    if (!confirm(`Apply all ${priceSuggestions.length} price suggestions?`)) {
+        return;
+    }
+    
+    try {
+        const itemIds = priceSuggestions.map(s => s.id);
+        const response = await fetch('/ai/pricing/apply', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({item_ids: itemIds, auto_apply: true})
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            alert(`✅ ${data.summary.updated} prices updated!\nRevenue impact: $${data.summary.total_revenue_impact}`);
+            await loadPriceSuggestions();
+        }
+    } catch (error) {
+        alert('Error applying prices');
+    }
+}
+
+// Load all data on page load
+window.addEventListener('DOMContentLoaded', refreshAllData);
+</script>
+{% endblock %}

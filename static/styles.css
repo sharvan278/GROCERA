@@ -29,12 +29,13 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 5%;
+    padding: 0.75rem 2rem;
     background: var(--white);
-    box-shadow: var(--shadow);
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
     position: sticky;
     top: 0;
     z-index: 1000;
+    border-bottom: 1px solid #e2e8f0;
 }
 
 .logo {
@@ -52,25 +53,34 @@ body {
 
 .nav-items {
     display: flex;
-    gap: 2rem;
+    gap: 0.4rem;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-end;
 }
 
 .nav-link {
-    color: var(--gray);
+    color: #475569;
     text-decoration: none;
     font-weight: 500;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.35rem;
+    padding: 0.42rem 0.68rem;
+    border-radius: 8px;
+    font-size: 0.84rem;
     transition: var(--transition);
 }
 
 .nav-link:hover, .nav-link.active {
-    color: var(--primary);
+    color: #1d4ed8;
+    background: #eff6ff;
 }
 
 .nav-link i {
-    font-size: 1.1rem;
+    font-size: 0.82rem;
+    width: 16px;
+    text-align: center;
 }
 
 /* Hero Section */
@@ -347,22 +357,24 @@ body {
 
 /* Footer */
 footer {
-    background: #111;
-    color: #fff;
-    padding: 2rem 5% 1rem;
+    background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
+    color: #e5e7eb;
+    padding: 1rem 5% 0.6rem;
     text-align: center;
     overflow: hidden;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .partners {
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
 }
 
 .partners h3 {
-    font-size: 1.4rem;
-    font-weight: bold;
-    margin-bottom: 1.5rem;
-    color: #fff;
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+    color: #f9fafb;
+    letter-spacing: 0.2px;
 }
 
 /* Scrolling container */
@@ -374,9 +386,9 @@ footer {
 
 .partner-track {
     display: flex;
-    gap: 2rem;
+    gap: 0.8rem;
     width: max-content;
-    animation: scroll 25s linear infinite;
+    animation: scroll 22s linear infinite;
 }
 
 @keyframes scroll {
@@ -390,23 +402,23 @@ footer {
 
 /* Partner Cards - Marquee Style (for footer) */
 .partner-marquee .partner-card {
-    background: #fff;
-    border-radius: 12px;
-    width: 150px;
-    height: 150px;
+    background: rgba(255, 255, 255, 0.96);
+    border-radius: 10px;
+    width: 108px;
+    height: 72px;
     overflow: hidden;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 20px rgba(2, 6, 23, 0.25);
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    transition: transform 0.4s linear, box-shadow 0.4s linear;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .partner-marquee .partner-card:hover {
-    transform: scale(1.08);
-    box-shadow: 0 10px 25px rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 26px rgba(2, 6, 23, 0.32);
 }
 
 .partner-marquee .partner-card img {
@@ -423,14 +435,15 @@ footer {
 
 .partner-overlay {
     position: absolute;
-    bottom: 6px;
+    bottom: 4px;
     left: 50%;
     transform: translateX(-50%);
-    background-color: #111;
-    color: #fff;
-    padding: 0.3rem 0.6rem;
-    border-radius: 16px;
-    font-size: 0.7rem;
+    background-color: rgba(17, 24, 39, 0.9);
+    color: #f9fafb;
+    padding: 0.18rem 0.45rem;
+    border-radius: 999px;
+    font-size: 0.62rem;
+    white-space: nowrap;
     opacity: 0;
     transition: opacity 0.3s ease-in-out;
 }
@@ -440,9 +453,9 @@ footer {
 }
 
 footer p {
-    margin-top: 1rem;
-    font-size: 0.8rem;
-    opacity: 0.7;
+    margin-top: 0.55rem;
+    font-size: 0.75rem;
+    opacity: 0.8;
     text-align: center;
 }
 
@@ -846,14 +859,23 @@ footer p {
 @media (max-width: 768px) {
     .navbar {
         flex-direction: column;
-        padding: 1rem;
-        gap: 1rem;
+        padding: 0.8rem;
+        gap: 0.6rem;
     }
     
     .nav-items {
-        gap: 1rem;
+        gap: 0.35rem;
         flex-wrap: wrap;
         justify-content: center;
+    }
+
+    .nav-link {
+        font-size: 0.78rem;
+        padding: 0.36rem 0.56rem;
+    }
+
+    .nav-link i {
+        font-size: 0.74rem;
     }
     
     .hero {

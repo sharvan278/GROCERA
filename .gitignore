@@ -57,3 +57,8 @@ test_mysql.py
 # Local Documentation
 PROJECT_STATUS.md
 QUICKSTART.md
+ACTIVATION_COMPLETE.md
+IMPLEMENTATION_SUMMARY.md
+
+# Local utility scripts
+check_tables.py

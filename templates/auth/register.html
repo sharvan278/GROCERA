@@ -10,6 +10,18 @@
             <p>Join Grocera for smart grocery management</p>
         </div>
 
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="auth-flash-list">
+                    {% for category, message in messages %}
+                        <div class="auth-flash {{ 'auth-flash-error' if category == 'error' else 'auth-flash-success' }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
         <form method="POST" action="{{ url_for('auth.register') }}" class="auth-form">
             <div class="form-group">
                 <label for="username"><i class="fas fa-user"></i> Username *</label>
@@ -159,6 +171,29 @@
 
 .auth-footer a:hover {
     text-decoration: underline;
+}
+
+.auth-flash-list {
+    margin-bottom: 1rem;
+}
+
+.auth-flash {
+    border-radius: 8px;
+    padding: 0.7rem 0.8rem;
+    font-size: 0.92rem;
+    margin-bottom: 0.6rem;
+}
+
+.auth-flash-error {
+    background: #fdecec;
+    color: #b42318;
+    border: 1px solid #f5c2c7;
+}
+
+.auth-flash-success {
+    background: #ecfdf3;
+    color: #027a48;
+    border: 1px solid #a6f4c5;
 }
 
 .password-input-wrapper {

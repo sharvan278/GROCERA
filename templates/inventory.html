@@ -49,6 +49,30 @@
                 {% endif %}
             </div>
             
+            <div class="ai-insights">
+                <button
+                    class="btn-ai"
+                    data-item-id="{{ item.id }}"
+                    data-item-name="{{ item.item_name | e }}"
+                    onclick="getDemandForecast(this)">
+                    <i class="fas fa-chart-line"></i> Demand
+                </button>
+                <button
+                    class="btn-ai"
+                    data-item-id="{{ item.id }}"
+                    data-item-name="{{ item.item_name | e }}"
+                    onclick="getSuggestedPrice(this)">
+                    <i class="fas fa-tag"></i> Price
+                </button>
+                <button
+                    class="btn-ai"
+                    data-item-id="{{ item.id }}"
+                    data-item-name="{{ item.item_name | e }}"
+                    onclick="getItemInsights(this)">
+                    <i class="fas fa-brain"></i> Insights
+                </button>
+            </div>
+            
             <div class="item-actions">
                 <form method="POST" action="{{ url_for('main.add_to_cart', item_id=item.id) }}" style="display: inline;">
                     <input type="hidden" name="quantity" value="1">
@@ -56,10 +80,10 @@
                         <i class="fas fa-cart-plus"></i> Add to Cart
                     </button>
                 </form>
-                <button class="btn-edit" onclick="editItem({{ item.id }})">
+                <button class="btn-edit" data-item-id="{{ item.id }}" onclick="editItem(this)">
                     <i class="fas fa-edit"></i> Edit
                 </button>
-                <button class="btn-delete" onclick="deleteItem({{ item.id }})">
+                <button class="btn-delete" data-item-id="{{ item.id }}" onclick="deleteItem(this)">
                     <i class="fas fa-trash"></i> Delete
                 </button>
             </div>
@@ -100,10 +124,10 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 2rem 5%;
-    background: var(--white);
-    box-shadow: var(--shadow);
-    margin-bottom: 2rem;
+    padding: 1.2rem 5%;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    border-bottom: 1px solid #e2e8f0;
+    margin-bottom: 1.25rem;
 }
 
 .header-actions {
@@ -117,30 +141,31 @@
 }
 
 .search-form input {
-    padding: 0.5rem 1rem;
-    border: 2px solid #E0E0E0;
+    padding: 0.55rem 0.85rem;
+    border: 1px solid #d1d5db;
     border-radius: 8px;
     width: 250px;
 }
 
 .inventory-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
-    padding: 0 5% 3rem;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 1rem;
+    padding: 0 5% 2rem;
 }
 
 .inventory-card {
     background: var(--white);
     border-radius: 12px;
-    padding: 1.5rem;
-    box-shadow: var(--shadow);
+    padding: 1.1rem;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
     transition: var(--transition);
 }
 
 .inventory-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.1);
 }
 
 .item-header {
@@ -188,9 +213,41 @@
     gap: 0.5rem;
 }
 
+.ai-insights {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.btn-ai {
+    flex: 1;
+    padding: 0.45rem;
+    border: 1px solid var(--primary);
+    background: transparent;
+    color: var(--primary);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+}
+
+.btn-ai:hover {
+    background: var(--primary);
+    color: var(--white);
+    transform: translateY(-2px);
+}
+
+.btn-ai i {
+    font-size: 0.9rem;
+}
+
 .btn-edit, .btn-delete, .btn-cart {
     flex: 1;
-    padding: 0.5rem;
+    padding: 0.45rem;
     border: none;
     border-radius: 8px;
     cursor: pointer;
@@ -245,15 +302,35 @@
 .page-btn:hover {
     background: var(--primary-dark);
 }
+
+@media (max-width: 768px) {
+    .page-header {
+        flex-direction: column;
+        gap: 0.85rem;
+        align-items: flex-start;
+    }
+
+    .header-actions {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .search-form input {
+        width: 100%;
+        min-width: 210px;
+    }
+}
 </style>
 
 <script>
-function editItem(itemId) {
+function editItem(buttonElement) {
+    const itemId = Number(buttonElement.dataset.itemId);
     // TODO: Implement edit modal
     alert('Edit functionality coming soon!');
 }
 
-function deleteItem(itemId) {
+function deleteItem(buttonElement) {
+    const itemId = Number(buttonElement.dataset.itemId);
     if (confirm('Are you sure you want to delete this item?')) {
         fetch(`/api/v1/inventory/${itemId}`, {
             method: 'DELETE'
@@ -266,6 +343,99 @@ function deleteItem(itemId) {
                 alert('Error deleting item');
             }
         });
+    }
+}
+
+async function getDemandForecast(buttonElement) {
+    const itemId = Number(buttonElement.dataset.itemId);
+    const itemName = buttonElement.dataset.itemName;
+    try {
+        const response = await fetch(`/ai/demand/predict/${itemId}`);
+        const data = await response.json();
+        
+        if (data.success) {
+            const predictions = data.predictions.slice(0, 3);
+            let message = `📊 Demand Forecast for ${itemName}\n\n`;
+            predictions.forEach(pred => {
+                message += `${pred.date}: ${pred.predicted_demand} units (${pred.confidence})\n`;
+            });
+            message += `\nAvg Daily: ${data.average_daily_demand} units`;
+            alert(message);
+        } else {
+            alert(data.message || 'Could not generate forecast');
+        }
+    } catch (error) {
+        alert('Error fetching demand forecast');
+    }
+}
+
+async function getSuggestedPrice(buttonElement) {
+    const itemId = Number(buttonElement.dataset.itemId);
+    const itemName = buttonElement.dataset.itemName;
+    try {
+        const response = await fetch(`/ai/pricing/suggest/${itemId}`);
+        const data = await response.json();
+        
+        if (data.success) {
+            let message = `💰 Price Suggestion for ${itemName}\n\n`;
+            message += `Current: $${data.current_price}\n`;
+            message += `Suggested: $${data.suggested_price}\n`;
+            message += `Change: ${data.price_change > 0 ? '+' : ''}${data.price_change}%\n\n`;
+            message += `Reason: ${data.reasoning}`;
+            
+            if (confirm(message + '\n\nApply this price?')) {
+                applyDynamicPrice(itemId);
+            }
+        } else {
+            alert(data.message || 'Could not generate price suggestion');
+        }
+    } catch (error) {
+        alert('Error fetching price suggestion');
+    }
+}
+
+async function applyDynamicPrice(itemId) {
+    try {
+        const response = await fetch('/ai/pricing/apply', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({item_ids: [itemId], auto_apply: true})
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+            alert(`✅ Price updated!\n\n${data.summary.updated} items updated\nTotal revenue impact: $${data.summary.total_revenue_impact}`);
+            location.reload();
+        }
+    } catch (error) {
+        alert('Error applying dynamic price');
+    }
+}
+
+async function getItemInsights(buttonElement) {
+    const itemId = Number(buttonElement.dataset.itemId);
+    const itemName = buttonElement.dataset.itemName;
+    try {
+        const response = await fetch(`/ai/insights/${itemId}`);
+        const data = await response.json();
+        
+        if (data.success) {
+            let message = `🧠 AI Insights for ${itemName}\n\n`;
+            
+            if (data.demand_forecast) {
+                message += `📊 Demand: ${data.demand_forecast.average_daily_demand} units/day\n`;
+            }
+            if (data.pricing_suggestion) {
+                message += `💰 Suggested Price: $${data.pricing_suggestion.suggested_price}\n`;
+            }
+            if (data.recommendations && data.recommendations.length > 0) {
+                message += `\n🎯 Cross-sell: ${data.recommendations.slice(0, 3).map(r => r.item_name).join(', ')}`;
+            }
+            
+            alert(message);
+        }
+    } catch (error) {
+        alert('Error fetching insights');
     }
 }
 </script>
